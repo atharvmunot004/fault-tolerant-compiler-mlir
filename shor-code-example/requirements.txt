@@ -1,0 +1,6 @@
+# Note: MLIR Python bindings are NOT available via pip install mlir
+# The 'mlir' package on PyPI is a stub and does not provide the required bindings.
+# You must build MLIR from source or use conda. See INSTALL.md for details.
+numpy
+jupyter
+
