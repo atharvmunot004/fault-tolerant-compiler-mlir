@@ -1,0 +1,2 @@
+"""Frontend adapter tests package."""
+
