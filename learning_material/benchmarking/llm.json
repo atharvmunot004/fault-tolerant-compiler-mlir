@@ -1,0 +1,230 @@
+{
+    "experiment_name": "qiskit_vs_pytket_ibm_torino_qft_roundtrip",
+    "version": "1.0",
+    "created_local_date": "2026-02-23",
+    "timezone": "Asia/Kolkata",
+  
+    "backend": {
+      "provider": "ibm_quantum",
+      "backend_name": "ibm_torino",
+      "capture_full_backend_properties": true,
+      "calibration_consistency": {
+        "require_same_calibration_between_frameworks": true,
+        "verification_method": "backend_properties_json_sha256",
+        "when_to_capture": [
+          "before_each_framework_block",
+          "after_each_framework_block"
+        ],
+        "on_mismatch": {
+          "mark_pair_invalid": true,
+          "max_retries_for_pair": 1
+        }
+      }
+    },
+  
+    "circuit_family": {
+      "type": "abstract_definition",
+      "qubit_counts": [5, 10, 15, 20, 25, 30, 35, 40],
+      "build_steps": [
+        {
+          "op": "X_ALL",
+          "description": "Apply X gate to every qubit."
+        },
+        {
+          "op": "QFT",
+          "description": "Apply QFT over all qubits (let framework choose decomposition)."
+        },
+        {
+          "op": "IQFT",
+          "description": "Apply inverse QFT over all qubits."
+        },
+        {
+          "op": "MEASURE_ALL",
+          "description": "Measure all qubits into classical bits."
+        }
+      ],
+      "expected_ideal_output_bitstring": "1...1",
+      "bitstring_convention": {
+        "endianness": "framework_native_then_normalized",
+        "normalization_target": "msb_left",
+        "note": "Normalize counts so the expected all-ones outcome is represented consistently across frameworks."
+      }
+    },
+  
+    "execution": {
+      "mode": "real_hardware_only",
+      "shots_per_run": 1024,
+      "sequential": true,
+      "repetitions_per_configuration": 5,
+      "aggregation": {
+        "report": ["mean", "std", "median"],
+        "primary_stat_for_tables": "mean"
+      }
+    },
+  
+    "frameworks": [
+      {
+        "name": "qiskit",
+        "compilation": {
+          "optimizer_preset_levels": [0, 1, 2, 3],
+          "routing": "framework_default_for_backend",
+          "note": "Use Qiskit transpile optimization_level = preset. Let transpiler handle routing."
+        },
+        "measurement": {
+          "compile_time": {
+            "type": "wall_clock_seconds",
+            "timer": "time.perf_counter"
+          },
+          "memory": {
+            "type": "peak_tracemalloc_mib",
+            "notes": "Peak resident-set memory proxy via tracemalloc (heap allocations), as in microbench.py."
+          }
+        }
+      },
+      {
+        "name": "pytket",
+        "compilation": {
+          "optimizer_preset_levels": [0, 1, 2, 3],
+          "routing": "framework_default_for_backend",
+          "note": "Use pytket preset levels mapped 0–3 as closely as possible to Qiskit levels. Let pytket handle routing."
+        },
+        "measurement": {
+          "compile_time": {
+            "type": "wall_clock_seconds",
+            "timer": "time.perf_counter"
+          },
+          "memory": {
+            "type": "peak_tracemalloc_mib",
+            "notes": "Peak resident-set memory proxy via tracemalloc (heap allocations), as in microbench.py."
+          }
+        }
+      }
+    ],
+  
+    "metrics": {
+      "post_routing_circuit_metrics": {
+        "depth": {
+          "definition": "Circuit depth after mapping/routing to backend topology."
+        },
+        "two_qubit_gate_count": {
+          "definition": "Count of all 2Q gates after decomposition and routing.",
+          "two_qubit_gate_set_preference": [
+            "cx",
+            "ecr",
+            "cz",
+            "swap",
+            "rzz",
+            "other_2q_if_present"
+          ],
+          "note": "Treat any 2-qubit instruction as 2Q for fairness; also keep per-gate breakdown."
+        }
+      },
+  
+      "hardware_result_metrics": {
+        "population_target_state": {
+          "definition": "Probability mass of the expected all-ones bitstring after normalization."
+        },
+        "hellinger_fidelity": {
+          "definition": "Hellinger fidelity between observed distribution p and ideal distribution q (delta at all-ones).",
+          "formula": "F_H = 1 - (1/sqrt(2)) * sqrt( sum_i (sqrt(p_i) - sqrt(q_i))^2 )",
+          "notes": [
+            "q is ideal distribution: q[target]=1, else 0.",
+            "Make sure p is normalized over all observed bitstrings."
+          ]
+        }
+      },
+  
+      "runtime_metrics": {
+        "compile_time_seconds": "Mean wall-clock transpilation time.",
+        "execution_time_seconds": "Wall time from job submission to completion (also store queue time if available).",
+        "peak_tracemalloc_mib": "Peak tracemalloc memory during compilation."
+      }
+    },
+  
+    "run_plan": {
+      "pairing_policy": {
+        "goal": "Keep calibration consistent between Qiskit and pytket for each (qubits, opt_level) pair.",
+        "order_within_pair": ["qiskit", "pytket"],
+        "calibration_capture": [
+          "capture_properties_before_qiskit",
+          "capture_properties_after_qiskit",
+          "capture_properties_before_pytket",
+          "capture_properties_after_pytket"
+        ]
+      },
+  
+      "configuration_grid": {
+        "dimensions": [
+          "qubit_count",
+          "optimizer_level",
+          "framework"
+        ],
+        "total_configurations": 64,
+        "total_runs_including_repetitions": 320
+      }
+    },
+  
+    "output": {
+      "format": "json",
+      "write_files": {
+        "results_json": "results/benchmark_results.json",
+        "raw_runs_jsonl": "results/raw_runs.jsonl",
+        "backend_properties_snapshots": "results/backend_properties/"
+      },
+      "result_schema": {
+        "per_run_record_fields": [
+          "timestamp_utc",
+          "framework",
+          "framework_version",
+          "backend_name",
+          "backend_properties_sha256",
+          "qubit_count",
+          "optimizer_level",
+          "shots",
+          "repeat_index",
+          "compile_time_seconds",
+          "peak_tracemalloc_mib",
+          "post_routing_depth",
+          "post_routing_2q_total",
+          "post_routing_2q_breakdown",
+          "execution_time_seconds",
+          "counts_normalized",
+          "population_target_state",
+          "hellinger_fidelity",
+          "calibration_match_with_paired_framework",
+          "notes"
+        ],
+        "per_configuration_aggregate_fields": [
+          "framework",
+          "backend_name",
+          "backend_properties_sha256_set",
+          "qubit_count",
+          "optimizer_level",
+          "shots",
+          "n_repeats",
+          "mean_depth",
+          "mean_2q_total",
+          "mean_compile_time_seconds",
+          "mean_execution_time_seconds",
+          "mean_peak_tracemalloc_mib",
+          "mean_population_target_state",
+          "mean_hellinger_fidelity",
+          "std_*",
+          "median_*"
+        ]
+      }
+    },
+  
+    "reproducibility": {
+      "pin_versions": true,
+      "record_system_info": true,
+      "random_seeds": {
+        "use_fixed_seed": true,
+        "seed_value": 12345,
+        "note": "Circuit is deterministic; seed only affects any internal randomness in toolchains."
+      },
+      "notes": [
+        "Memory profiling uses tracemalloc peak (heap allocations) as in the referenced micro-benchmark suite. The paper records peak memory footprint via tracemalloc and uses five repeats for statistical validity. "
+      ]
+    }
+  }
