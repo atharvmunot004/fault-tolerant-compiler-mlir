@@ -1,0 +1,57 @@
+{
+  "experiment_name": "qiskit_vs_pytket_ibm_torino_qft_roundtrip_quick",
+  "version": "1.0",
+  "created_local_date": "2026-02-25",
+  "timezone": "Asia/Kolkata",
+  "backend": {
+    "provider": "ibm_quantum",
+    "backend_name": "ibm_torino",
+    "capture_full_backend_properties": false
+  },
+  "circuit_family": {
+    "type": "abstract_definition",
+    "qubit_counts": [5],
+    "build_steps": [
+      {"op": "X_ALL", "description": "Apply X gate to every qubit."},
+      {"op": "QFT", "description": "Apply QFT over all qubits."},
+      {"op": "IQFT", "description": "Apply inverse QFT over all qubits."},
+      {"op": "MEASURE_ALL", "description": "Measure all qubits."}
+    ],
+    "expected_ideal_output_bitstring": "1...1",
+    "bitstring_convention": {"endianness": "framework_native_then_normalized", "normalization_target": "msb_left"}
+  },
+  "execution": {
+    "mode": "real_hardware_only",
+    "shots_per_run": 512,
+    "sequential": true,
+    "repetitions_per_configuration": 1,
+    "aggregation": {"report": ["mean", "std", "median"], "primary_stat_for_tables": "mean"}
+  },
+  "frameworks": [
+    {
+      "name": "qiskit",
+      "compilation": {"optimizer_preset_levels": [0], "routing": "framework_default_for_backend"},
+      "measurement": {"compile_time": {"type": "wall_clock_seconds", "timer": "time.perf_counter"}, "memory": {"type": "peak_tracemalloc_mib"}}
+    },
+    {
+      "name": "pytket",
+      "compilation": {"optimizer_preset_levels": [0], "routing": "framework_default_for_backend"},
+      "measurement": {"compile_time": {"type": "wall_clock_seconds", "timer": "time.perf_counter"}, "memory": {"type": "peak_tracemalloc_mib"}}
+    }
+  ],
+  "metrics": {},
+  "run_plan": {},
+  "output": {
+    "format": "json",
+    "write_files": {
+      "results_json": "results/benchmark_results_quick.json",
+      "raw_runs_jsonl": "results/raw_runs_quick.jsonl",
+      "backend_properties_snapshots": "results/backend_properties/"
+    }
+  },
+  "reproducibility": {
+    "pin_versions": true,
+    "record_system_info": true,
+    "random_seeds": {"use_fixed_seed": true, "seed_value": 12345}
+  }
+}

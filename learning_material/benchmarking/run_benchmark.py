@@ -59,16 +59,18 @@ def _run_qiskit(
     shots: int,
     seed: int,
 ) -> dict:
-    """Run one Qiskit benchmark iteration."""
-    from qiskit import transpile
-    import qiskit.__version__ as qv
+    """Run one Qiskit benchmark iteration (uses Sampler V2 primitives)."""
+    import qiskit
+    from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+    qv = qiskit.__version__
 
     qc = build_qiskit_qft_roundtrip(n_qubits)
 
-    # Compile with tracemalloc
+    # Compile with preset pass manager (required for Runtime primitives)
     tracemalloc.start()
     t0 = time.perf_counter()
-    compiled = transpile(qc, backend, optimization_level=opt_level, seed_transpiler=seed)
+    pm = generate_preset_pass_manager(optimization_level=opt_level, backend=backend, seed_transpiler=seed)
+    compiled = pm.run(qc)
     compile_time = time.perf_counter() - t0
     _, peak_mib = tracemalloc.get_traced_memory()
     tracemalloc.stop()
@@ -78,13 +80,22 @@ def _run_qiskit(
     breakdown = get_two_qubit_breakdown_qiskit(compiled)
     two_q_total = sum(breakdown.values())
 
-    # Execute on real hardware
+    # Execute via Sampler V2 (backend.run() removed)
+    from qiskit_ibm_runtime import SamplerV2 as Sampler
+    sampler = Sampler(backend)
     t0 = time.perf_counter()
-    job = backend.run(compiled, shots=shots)
+    job = sampler.run([compiled], shots=shots)
     result = job.result()
     exec_time = time.perf_counter() - t0
 
-    counts = result.get_counts()  # Single circuit: returns counts for first result
+    # PrimitiveResult: use join_data() for counts (works with any creg layout)
+    counts = {}
+    if result and len(result) > 0:
+        pub_result = result[0]
+        if hasattr(pub_result, "join_data"):
+            counts = pub_result.join_data().get_counts()
+        elif hasattr(pub_result, "data") and hasattr(pub_result.data, "get_counts"):
+            counts = getattr(pub_result.data, "get_counts", lambda: {})()
     if not isinstance(counts, dict):
         counts = {}
 
@@ -114,20 +125,23 @@ def _run_qiskit(
 def _run_pytket(
     n_qubits: int,
     opt_level: int,
-    backend,
+    pytket_backend,
+    qiskit_backend,
     shots: int,
     seed: int,
 ) -> dict:
-    """Run one PyTket benchmark iteration."""
+    """Run one PyTket benchmark: compile with PyTket, run on IBM via Qiskit Sampler (job mode)."""
     import pytket
-    from pytket.extensions.qiskit import IBMQBackend
+    from pytket.extensions.qiskit import tk_to_qiskit
+    from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+    from qiskit_ibm_runtime import SamplerV2 as Sampler
 
     circ = build_pytket_qft_roundtrip(n_qubits)
 
-    # Compile
+    # Compile with PyTket (metrics reflect PyTket's compilation)
     tracemalloc.start()
     t0 = time.perf_counter()
-    compiled = backend.get_compiled_circuit(circ, optimisation_level=opt_level)
+    compiled = pytket_backend.get_compiled_circuit(circ, optimisation_level=opt_level)
     compile_time = time.perf_counter() - t0
     _, peak_mib = tracemalloc.get_traced_memory()
     tracemalloc.stop()
@@ -137,21 +151,27 @@ def _run_pytket(
     breakdown = get_two_qubit_breakdown_pytket(compiled)
     two_q_total = sum(breakdown.values())
 
-    # Execute
+    # Convert PyTket circuit to Qiskit and make ISA-compliant for Runtime
+    qc_qiskit = tk_to_qiskit(compiled)
+    pm = generate_preset_pass_manager(optimization_level=0, backend=qiskit_backend)
+    qc_isa = pm.run(qc_qiskit)
+
+    # Execute via Qiskit Sampler (job mode; works on open plan)
+    sampler = Sampler(qiskit_backend)
     t0 = time.perf_counter()
-    handles = backend.process_circuits([compiled], n_shots=shots, seed=seed)
-    result = backend.get_result(handles[0])
+    job = sampler.run([qc_isa], shots=shots)
+    result = job.result()
     exec_time = time.perf_counter() - t0
 
-    # Convert counts: PyTket uses OutcomeArray (tuple of 0/1)
     counts = {}
-    for outcome, count in result.get_counts().items():
-        # OutcomeArray is typically tuple of ints; convert to bitstring
-        if hasattr(outcome, "__iter__") and not isinstance(outcome, str):
-            key = "".join(str(int(b)) for b in outcome)
-        else:
-            key = str(outcome)
-        counts[key] = count
+    if result and len(result) > 0:
+        pub_result = result[0]
+        if hasattr(pub_result, "join_data"):
+            counts = pub_result.join_data().get_counts()
+        elif hasattr(pub_result, "data") and hasattr(pub_result.data, "get_counts"):
+            counts = getattr(pub_result.data, "get_counts", lambda: {})()
+    if not isinstance(counts, dict):
+        counts = {}
 
     pop = population_target_state(counts, n_qubits)
     hel = hellinger_fidelity(counts, n_qubits)
@@ -172,7 +192,8 @@ def _run_pytket(
         "counts_normalized": counts_norm,
         "population_target_state": pop,
         "hellinger_fidelity": hel,
-        "backend_properties_sha256": _backend_properties_sha256(backend),
+        "backend_properties_sha256": _backend_properties_sha256(qiskit_backend),
+        "notes": "Executed via Qiskit Sampler (PyTket-compiled circuit converted to Qiskit for job-mode run).",
     }
 
 
@@ -200,7 +221,7 @@ def _get_pytket_backend(config: dict):
     return IBMQBackend(backend_name)
 
 
-def run_benchmark(config_path: Path | None = None, dry_run: bool = False) -> None:
+def run_benchmark(config_path: Path | None = None, dry_run: bool = False, qiskit_only: bool = False) -> None:
     """Main benchmark entry point."""
     config = load_config(config_path)
     out = config["output"]["write_files"]
@@ -215,6 +236,13 @@ def run_benchmark(config_path: Path | None = None, dry_run: bool = False) -> Non
     seed = config["reproducibility"]["random_seeds"]["seed_value"]
 
     frameworks = [f["name"] for f in config["frameworks"]]
+    if qiskit_only:
+        frameworks = [f for f in frameworks if f == "qiskit"]
+        if not frameworks:
+            print("--qiskit-only specified but qiskit not in config; using all frameworks.")
+            frameworks = [f["name"] for f in config["frameworks"]]
+        else:
+            print("Running Qiskit only (PyTket skipped).")
     all_runs = []
     aggregates = []
 
@@ -255,7 +283,7 @@ def run_benchmark(config_path: Path | None = None, dry_run: bool = False) -> Non
                         if fw == "qiskit":
                             rec = _run_qiskit(nq, opt, qiskit_backend, shots, seed)
                         else:
-                            rec = _run_pytket(nq, opt, pytket_backend, shots, seed)
+                            rec = _run_pytket(nq, opt, pytket_backend, qiskit_backend, shots, seed)
                         rec["timestamp_utc"] = datetime.now(timezone.utc).isoformat()
                         rec["backend_name"] = config["backend"]["backend_name"]
                         rec["repeat_index"] = rep
@@ -360,8 +388,9 @@ def main():
     parser = argparse.ArgumentParser(description="Qiskit vs PyTket QFT Roundtrip Benchmark")
     parser.add_argument("--config", type=Path, default=None, help="Path to llm.json config")
     parser.add_argument("--dry-run", action="store_true", help="Build circuits only, no execution")
+    parser.add_argument("--qiskit-only", action="store_true", help="Run only Qiskit (skip PyTket; use on IBM open plan to avoid session errors)")
     args = parser.parse_args()
-    run_benchmark(config_path=args.config, dry_run=args.dry_run)
+    run_benchmark(config_path=args.config, dry_run=args.dry_run, qiskit_only=args.qiskit_only)
 
 
 if __name__ == "__main__":

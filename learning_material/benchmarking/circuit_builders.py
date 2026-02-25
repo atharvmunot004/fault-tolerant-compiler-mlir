@@ -9,7 +9,7 @@ from typing import Any
 
 # Qiskit
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import QFT, IQFT
+from qiskit.circuit.library import QFT
 
 # PyTket (optional - import only when needed)
 try:
@@ -29,8 +29,8 @@ def build_qiskit_qft_roundtrip(n_qubits: int) -> QuantumCircuit:
         qc.x(q)
     # QFT
     qc.append(QFT(n_qubits, do_swaps=True), range(n_qubits))
-    # IQFT
-    qc.append(IQFT(n_qubits, do_swaps=True), range(n_qubits))
+    # IQFT (inverse=True in QFT)
+    qc.append(QFT(n_qubits, do_swaps=True, inverse=True), range(n_qubits))
     # MEASURE_ALL
     qc.measure(range(n_qubits), range(n_qubits))
     return qc

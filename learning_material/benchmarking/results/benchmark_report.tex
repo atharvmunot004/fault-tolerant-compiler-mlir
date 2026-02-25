@@ -1,0 +1,230 @@
+% Benchmark report: Qiskit vs PyTket IBM Torino QFT roundtrip
+% Strict compliance with learning_material/benchmarking/llm.json
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+
+\title{Qiskit vs PyTket IBM Torino QFT Roundtrip Benchmark Report}
+\author{Benchmark suite v1.0}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Experiment Specification (per llm.json)}
+
+\subsection{Experiment identity}
+\begin{itemize}
+  \item \textbf{Experiment name:} qiskit\_vs\_pytket\_ibm\_torino\_qft\_roundtrip
+  \item \textbf{Version:} 1.0
+  \item \textbf{Backend:} ibm\_torino (provider: ibm\_quantum)
+  \item \textbf{Execution mode:} real hardware only; sequential runs.
+\end{itemize}
+
+\subsection{Circuit family (abstract definition)}
+Circuit is defined by the following build steps:
+\begin{enumerate}
+  \item \textbf{X\_ALL} --- Apply X gate to every qubit.
+  \item \textbf{QFT} --- Apply QFT over all qubits (framework chooses decomposition).
+  \item \textbf{IQFT} --- Apply inverse QFT over all qubits.
+  \item \textbf{MEASURE\_ALL} --- Measure all qubits into classical bits.
+\end{enumerate}
+\begin{itemize}
+  \item \textbf{Expected ideal output bitstring:} \(1\ldots 1\) (all ones).
+  \item \textbf{Bitstring convention:} Framework-native then normalized to \textbf{msb\_left}.
+\end{itemize}
+
+\subsection{Frameworks and compilation}
+\begin{itemize}
+  \item \textbf{Qiskit:} optimization levels 0--3; routing: framework default for backend; transpiler optimization\_level preset.
+  \item \textbf{PyTket:} optimization levels 0--3; routing: framework default for backend; preset levels mapped to Qiskit 0--3.
+\end{itemize}
+
+\subsection{Metrics (per llm.json)}
+
+\subsubsection{Post-routing circuit metrics}
+\begin{itemize}
+  \item \textbf{Depth:} Circuit depth after mapping/routing to backend topology.
+  \item \textbf{Two-qubit gate count:} Count of all 2Q gates after decomposition and routing. Gate set preference: cx, ecr, cz, swap, rzz, other 2Q if present; per-gate breakdown recorded.
+\end{itemize}
+
+\subsubsection{Hardware result metrics}
+\begin{itemize}
+  \item \textbf{Population target state:} Probability mass of the expected all-ones bitstring after normalization.
+  \item \textbf{Hellinger fidelity:} Fidelity between observed distribution \(p\) and ideal distribution \(q\) (delta at all-ones):
+  \[
+  F_H = 1 - \frac{1}{\sqrt{2}} \sqrt{\sum_i \bigl(\sqrt{p_i} - \sqrt{q_i}\bigr)^2},\qquad q_{\mathrm{target}}=1,\; q_{\mathrm{else}}=0.
+  \]
+  Counts are normalized over all observed bitstrings.
+\end{itemize}
+
+\subsubsection{Runtime metrics}
+\begin{itemize}
+  \item \textbf{compile\_time\_seconds:} Mean wall-clock transpilation time (time.perf\_counter).
+  \item \textbf{execution\_time\_seconds:} Wall time from job submission to completion.
+  \item \textbf{peak\_tracemalloc\_mib:} Peak tracemalloc memory during compilation (resident-set proxy).
+\end{itemize}
+
+\subsection{Aggregation and primary statistic}
+Per llm.json: report \textbf{mean}, \textbf{std}, \textbf{median}; \textbf{primary stat for tables: mean}.
+
+\subsection{Reproducibility}
+\begin{itemize}
+  \item Fixed random seed: 12345 (circuit deterministic; seed affects toolchain internals).
+  \item System info and config recorded in metadata.
+\end{itemize}
+
+%-----------
+\section{Run configuration used}
+
+This report uses the quick configuration (subset of full llm.json grid):
+\begin{itemize}
+  \item \textbf{Qubit counts:} 5
+  \item \textbf{Optimizer level:} 0 (both frameworks)
+  \item \textbf{Shots per run:} 512
+  \item \textbf{Repetitions per configuration:} 1
+  \item \textbf{Backend properties SHA256:} 598197e9424d1e8e66a78b3ea2b757c0764275fccf68d90b6428d2da96b3e7dd (same for both frameworks; calibration consistency).
+\end{itemize}
+
+\subsection{System and metadata}
+\begin{itemize}
+  \item \textbf{Platform:} Windows-11-10.0.26200-SP0
+  \item \textbf{Python:} 3.12.10
+  \item \textbf{Timestamp (UTC):} 2026-02-25T05:40:56
+  \item \textbf{Framework versions:} Qiskit 2.3.0; PyTket 2.13.0
+\end{itemize}
+
+%-----------
+\section{Per-run records (result schema)}
+
+Per llm.json \texttt{per\_run\_record\_fields}: timestamp\_utc, framework, framework\_version, backend\_name, backend\_properties\_sha256, qubit\_count, optimizer\_level, shots, repeat\_index, compile\_time\_seconds, peak\_tracemalloc\_mib, post\_routing\_depth, post\_routing\_2q\_total, post\_routing\_2q\_breakdown, execution\_time\_seconds, population\_target\_state, hellinger\_fidelity, calibration\_match\_with\_paired\_framework, notes.
+
+\begin{table}[h]
+\centering
+\caption{Per-run records (primary runtime and circuit metrics).}
+\label{tab:per-run}
+\begin{tabular}{llccccccc}
+\toprule
+Framework & Backend & \(n_{\mathrm{qubits}}\) & opt & Shots & Compile (s) & Exec (s) & Depth & 2Q total \\
+\midrule
+Qiskit    & ibm\_torino & 5 & 0 & 512 & 1.971 & 7.062 & 352 & 106 \\
+PyTket    & ibm\_torino & 5 & 0 & 512 & 0.426 & 6.186 & 250 & 78  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Per-run memory and hardware result metrics.}
+\label{tab:per-run-metrics}
+\begin{tabular}{llcccc}
+\toprule
+Framework & Peak tracemalloc (MiB) & Population target & Hellinger fid. & Calibration match \\
+\midrule
+Qiskit & 7.10 & 0.2285 & 0.2775 & yes \\
+PyTket & 0.638 & 0.4707 & 0.4397 & yes \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Post-routing two-qubit gate breakdown}
+Per llm.json \texttt{two\_qubit\_gate\_set\_preference} and per-gate breakdown:
+\begin{itemize}
+  \item \textbf{Qiskit} (opt=0): cz = 106 (total 106).
+  \item \textbf{PyTket} (opt=0): CZ = 78 (total 78).
+\end{itemize}
+
+\subsection{Calibration consistency}
+\texttt{backend\_properties\_sha256} is identical for both runs (598197e9...), so calibration match with paired framework is satisfied for this report.
+
+\textbf{Note:} PyTket circuits were compiled with PyTket then converted to Qiskit and executed via the Qiskit Runtime Sampler (job mode) for compatibility with the IBM open plan; compilation metrics and 2Q breakdown are from PyTket, execution time is wall time of the Qiskit Sampler run.
+
+%-----------
+\section{Per-configuration aggregates (primary stat: mean)}
+
+Per llm.json \texttt{per\_configuration\_aggregate\_fields}: framework, backend\_name, qubit\_count, optimizer\_level, shots, n\_repeats, mean\_depth, mean\_2q\_total, mean\_compile\_time\_seconds, mean\_execution\_time\_seconds, mean\_peak\_tracemalloc\_mib, mean\_population\_target\_state, mean\_hellinger\_fidelity, std\_*, median\_*.
+
+\begin{table}[h]
+\centering
+\caption{Aggregates (primary statistic: mean).}
+\label{tab:aggregates}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccccccc}
+\toprule
+Framework & \(n_{\mathrm{qubits}}\) & opt & mean depth & mean 2Q & mean compile (s) & mean exec (s) & mean MiB & mean pop. & mean \(F_H\) \\
+\midrule
+Qiskit & 5 & 0 & 352 & 106 & 1.971 & 7.062 & 7.10 & 0.2285 & 0.2775 \\
+PyTket & 5 & 0 & 250 & 78  & 0.426 & 6.186 & 0.638 & 0.4707 & 0.4397 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+With \(n_{\mathrm{repeats}}=1\), std and median equal the single-run values; reported std = 0, median = same as mean for compile and execution time.
+
+%-----------
+\section{Figures}
+
+All plots use the primary statistic (mean) per llm.json aggregation. Data: \(n_{\mathrm{qubits}}=5\), optimizer level 0, 512 shots, ibm\_torino.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{fig_runtime.pdf}
+  \caption{Runtime metrics: mean compile time (s) and mean execution time (s) by framework.}
+  \label{fig:runtime}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{fig_circuit.pdf}
+  \caption{Post-routing circuit metrics: mean depth and mean two-qubit gate count by framework.}
+  \label{fig:circuit}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.65\textwidth]{fig_memory.pdf}
+  \caption{Compilation memory: mean peak tracemalloc (MiB) by framework.}
+  \label{fig:memory}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{fig_hardware.pdf}
+  \caption{Hardware result metrics: mean population on target state (all-ones) and mean Hellinger fidelity by framework.}
+  \label{fig:hardware}
+\end{figure}
+
+%-----------
+\section{Normalized counts (target bitstring)}
+
+Expected ideal outcome: \texttt{11111} (msb\_left, \(n_{\mathrm{qubits}}=5\)).
+
+\begin{itemize}
+  \item \textbf{Qiskit:} \(P(\texttt{11111}) = 0.2285\).
+  \item \textbf{PyTket:} \(P(\texttt{11111}) = 0.4707\).
+\end{itemize}
+
+Full normalized count distributions are stored in \texttt{raw\_runs\_quick.jsonl} and \texttt{benchmark\_results\_quick.json} (\texttt{counts\_normalized}).
+
+%-----------
+\section{Summary}
+
+\begin{enumerate}
+  \item Experiment and metrics follow \texttt{llm.json}: circuit family (X\_ALL, QFT, IQFT, MEASURE\_ALL), backend ibm\_torino, bitstring convention msb\_left, expected output all-ones.
+  \item Post-routing circuit metrics: depth and two-qubit gate count (with breakdown) reported per run and as mean over repeats.
+  \item Hardware result metrics: population on target state and Hellinger fidelity reported; formula and normalization as in llm.json.
+  \item Runtime metrics: compile time (wall-clock), execution time (submission to completion), peak tracemalloc (MiB) reported; aggregation uses mean as primary stat.
+  \item Calibration consistency: same \texttt{backend\_properties\_sha256} for both frameworks; \texttt{calibration\_match\_with\_paired\_framework} = true.
+  \item Reproducibility: fixed seed 12345; system info and config recorded in metadata.
+\end{enumerate}
+
+\end{document}
