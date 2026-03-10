@@ -158,7 +158,7 @@ Supporting these would require implementing additional infrastructure.
 
 # 5. Benchmark-Based Evaluation of Existing Quantum Compiler Frameworks
 
-The link to the ![report](https://github.com/atharvmunot004/fault-tolerant-compiler-mlir/blob/main/learning_material/benchmarking/results/benchmark_report.pdf)
+The link to the [report](https://github.com/atharvmunot004/fault-tolerant-compiler-mlir/blob/main/learning_material/benchmarking/results/benchmark_report.pdf)
 
 In addition to the architectural evaluation of MLIR, a practical benchmarking study was conducted to compare the performance of existing quantum compiler frameworks.
 
