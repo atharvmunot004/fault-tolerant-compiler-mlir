@@ -37,16 +37,38 @@ Configure IBM Quantum access (one of):
 python run_benchmark.py --dry-run
 ```
 
-**Full run** (real hardware):
+**Full run** (real hardware, default config):
 
 ```bash
 python run_benchmark.py
+```
+
+**Opt-level comparison and opt_level=3 qubit sweep** (real hardware):
+
+Compare optimization levels 0, 1, 2, 3 and measure opt_level=3 performance across qubit counts 10, 20, 30, 40, 50. Total: 5 qubit counts × 4 opt levels × 2 frameworks = 40 runs.
+
+```bash
+python run_benchmark.py --config llm_opt_qubit_sweep.json
+```
+
+Results: `results/benchmark_results_opt_qubit_sweep.json`, `results/raw_runs_opt_qubit_sweep.jsonl`.
+
+**Quick run** (fewer runs, e.g. 5 qubits, opt 0 only):
+
+```bash
+python run_benchmark.py --config llm_quick.json
 ```
 
 **Custom config**:
 
 ```bash
 python run_benchmark.py --config path/to/llm.json
+```
+
+**Qiskit only** (skip PyTket; useful on IBM open plan):
+
+```bash
+python run_benchmark.py --config llm_quick.json --qiskit-only
 ```
 
 ## Output
@@ -59,7 +81,9 @@ python run_benchmark.py --config path/to/llm.json
 
 | File | Purpose |
 |------|---------|
-| `llm.json` | Benchmark specification |
+| `llm.json` | Full benchmark specification |
+| `llm_quick.json` | Quick run: 5 qubits, opt 0, 1 rep |
+| `llm_opt_qubit_sweep.json` | Opt levels 0–3 and opt_level=3 qubit sweep (10–50 qubits) on real hardware |
 | `config.py` | Config loader |
 | `circuit_builders.py` | QFT roundtrip circuits (Qiskit, PyTket) |
 | `metrics.py` | Population, Hellinger fidelity, 2Q breakdown |

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.9.24) (preloaded format=pdflatex 2023.10.1)  25 FEB 2026 11:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.9.24) (preloaded format=pdflatex 2023.10.1)  26 FEB 2026 11:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -130,22 +130,41 @@ Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \@lastruleclass=\count274
 \@thisrulewidth=\dimen162
 )
+(C:\Program Files\MiKTeX\tex/latex/tools\longtable.sty
+Package: longtable 2021-09-01 v4.17 Multi-page Table package (DPC)
+\LTleft=\skip53
+\LTright=\skip54
+\LTpre=\skip55
+\LTpost=\skip56
+\LTchunksize=\count275
+\LTcapwidth=\dimen163
+\LT@head=\box53
+\LT@firsthead=\box54
+\LT@foot=\box55
+\LT@lastfoot=\box56
+\LT@gbox=\box57
+\LT@cols=\count276
+\LT@rows=\count277
+\c@LT@tables=\count278
+\c@LT@chunks=\count279
+\LT@p@ftn=\toks24
+)
 (C:\Program Files\MiKTeX\tex/latex/siunitx\siunitx.sty
 Package: siunitx 2025-07-09 v3.4.14 A comprehensive (SI) units package
-\l__siunitx_number_uncert_offset_int=\count275
-\l__siunitx_number_exponent_fixed_int=\count276
-\l__siunitx_number_min_decimal_int=\count277
-\l__siunitx_number_min_integer_int=\count278
-\l__siunitx_number_round_precision_int=\count279
-\l__siunitx_number_lower_threshold_int=\count280
-\l__siunitx_number_upper_threshold_int=\count281
-\l__siunitx_number_group_first_int=\count282
-\l__siunitx_number_group_size_int=\count283
-\l__siunitx_number_group_minimum_int=\count284
-\l__siunitx_angle_tmp_dim=\dimen163
-\l__siunitx_angle_marker_box=\box53
-\l__siunitx_angle_unit_box=\box54
-\l__siunitx_compound_count_int=\count285
+\l__siunitx_number_uncert_offset_int=\count280
+\l__siunitx_number_exponent_fixed_int=\count281
+\l__siunitx_number_min_decimal_int=\count282
+\l__siunitx_number_min_integer_int=\count283
+\l__siunitx_number_round_precision_int=\count284
+\l__siunitx_number_lower_threshold_int=\count285
+\l__siunitx_number_upper_threshold_int=\count286
+\l__siunitx_number_group_first_int=\count287
+\l__siunitx_number_group_size_int=\count288
+\l__siunitx_number_group_minimum_int=\count289
+\l__siunitx_angle_tmp_dim=\dimen164
+\l__siunitx_angle_marker_box=\box58
+\l__siunitx_angle_unit_box=\box59
+\l__siunitx_compound_count_int=\count290
 
 (C:\Program Files\MiKTeX\tex/latex/translations\translations.sty
 Package: translations 2022/02/05 v1.12 internationalization of LaTeX2e packages
@@ -153,7 +172,7 @@ Package: translations 2022/02/05 v1.12 internationalization of LaTeX2e packages
 
 (C:\Program Files\MiKTeX\tex/latex/etoolbox\etoolbox.sty
 Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
-\etb@tempcnta=\count286
+\etb@tempcnta=\count291
 )
 (C:\Program Files\MiKTeX\tex/generic/pdftexcmds\pdftexcmds.sty
 Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
@@ -172,36 +191,36 @@ Package pdftexcmds Info: \pdf@primitive is available.
 Package pdftexcmds Info: \pdf@ifprimitive is available.
 Package pdftexcmds Info: \pdfdraftmode found.
 ))
-\l__siunitx_table_tmp_box=\box55
-\l__siunitx_table_tmp_dim=\dimen164
-\l__siunitx_table_column_width_dim=\dimen165
-\l__siunitx_table_integer_box=\box56
-\l__siunitx_table_decimal_box=\box57
-\l__siunitx_table_uncert_box=\box58
-\l__siunitx_table_before_box=\box59
-\l__siunitx_table_after_box=\box60
-\l__siunitx_table_before_dim=\dimen166
-\l__siunitx_table_carry_dim=\dimen167
-\l__siunitx_unit_tmp_int=\count287
-\l__siunitx_unit_position_int=\count288
-\l__siunitx_unit_total_int=\count289
+\l__siunitx_table_tmp_box=\box60
+\l__siunitx_table_tmp_dim=\dimen165
+\l__siunitx_table_column_width_dim=\dimen166
+\l__siunitx_table_integer_box=\box61
+\l__siunitx_table_decimal_box=\box62
+\l__siunitx_table_uncert_box=\box63
+\l__siunitx_table_before_box=\box64
+\l__siunitx_table_after_box=\box65
+\l__siunitx_table_before_dim=\dimen167
+\l__siunitx_table_carry_dim=\dimen168
+\l__siunitx_unit_tmp_int=\count292
+\l__siunitx_unit_position_int=\count293
+\l__siunitx_unit_total_int=\count294
 
 (C:\Program Files\MiKTeX\tex/latex/tools\array.sty
 Package: array 2022/09/04 v2.5g Tabular extension package (FMi)
-\col@sep=\dimen168
-\ar@mcellbox=\box61
-\extrarowheight=\dimen169
-\NC@list=\toks24
-\extratabsurround=\skip53
-\backup@length=\skip54
-\ar@cellbox=\box62
+\col@sep=\dimen169
+\ar@mcellbox=\box66
+\extrarowheight=\dimen170
+\NC@list=\toks25
+\extratabsurround=\skip57
+\backup@length=\skip58
+\ar@cellbox=\box67
 ))
 (C:\Program Files\MiKTeX\tex/latex/graphics\graphicx.sty
 Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
 
 (C:\Program Files\MiKTeX\tex/latex/graphics\keyval.sty
 Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
-\KV@toks@=\toks25
+\KV@toks@=\toks26
 )
 (C:\Program Files\MiKTeX\tex/latex/graphics\graphics.sty
 Package: graphics 2022/03/10 v1.4e Standard LaTeX Graphics (DPC,SPQR)
@@ -217,8 +236,8 @@ Package graphics Info: Driver file: pdftex.def on input line 107.
 (C:\Program Files\MiKTeX\tex/latex/graphics-def\pdftex.def
 File: pdftex.def 2022/09/22 v1.2b Graphics/color driver for pdftex
 ))
-\Gin@req@height=\dimen170
-\Gin@req@width=\dimen171
+\Gin@req@height=\dimen171
+\Gin@req@width=\dimen172
 )
 (C:\Program Files\MiKTeX\tex/latex/hyperref\hyperref.sty
 Package: hyperref 2023-07-08 v7.01b Hypertext links for LaTeX
@@ -253,11 +272,11 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 (C:\Program Files\MiKTeX\tex/latex/kvoptions\kvoptions.sty
 Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
 ))
-\c@section@level=\count290
+\c@section@level=\count295
 )
-\@linkdim=\dimen172
-\Hy@linkcounter=\count291
-\Hy@pagecounter=\count292
+\@linkdim=\dimen173
+\Hy@linkcounter=\count296
+\Hy@pagecounter=\count297
 
 (C:\Program Files\MiKTeX\tex/latex/hyperref\pd1enc.def
 File: pd1enc.def 2023-07-08 v7.01b Hyperref: PDFDocEncoding definition (HO)
@@ -267,7 +286,7 @@ Now handling font encoding PD1 ...
 (C:\Program Files\MiKTeX\tex/generic/intcalc\intcalc.sty
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
-\Hy@SavedSpaceFactor=\count293
+\Hy@SavedSpaceFactor=\count298
 
 (C:\Program Files\MiKTeX\tex/latex/hyperref\puenc.def
 File: puenc.def 2023-07-08 v7.01b Hyperref: PDF Unicode definition (HO)
@@ -281,14 +300,14 @@ Package hyperref Info: Plain pages OFF on input line 4182.
 Package hyperref Info: Backreferencing OFF on input line 4187.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4434.
-\c@Hy@tempcnt=\count294
+\c@Hy@tempcnt=\count299
 
 (C:\Program Files\MiKTeX\tex/latex/url\url.sty
 \Urlmuskip=\muskip17
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 4772.
-\XeTeXLinkMargin=\dimen173
+\XeTeXLinkMargin=\dimen174
 
 (C:\Program Files\MiKTeX\tex/generic/bitset\bitset.sty
 Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
@@ -297,9 +316,9 @@ Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
-\Fld@menulength=\count295
-\Field@Width=\dimen174
-\Fld@charsize=\dimen175
+\Fld@menulength=\count300
+\Field@Width=\dimen175
+\Fld@charsize=\dimen176
 Package hyperref Info: Hyper figures OFF on input line 6051.
 Package hyperref Info: Link nesting OFF on input line 6056.
 Package hyperref Info: Hyper index ON on input line 6059.
@@ -312,9 +331,9 @@ Package hyperref Info: PDF/A mode OFF on input line 6081.
 Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
 package with kernel methods
 )
-\Hy@abspage=\count296
-\c@Item=\count297
-\c@Hfootnote=\count298
+\Hy@abspage=\count301
+\c@Item=\count302
+\c@Hfootnote=\count303
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
 
@@ -326,8 +345,8 @@ Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend pac
 kage
 with kernel methods
 )
-\Fld@listcount=\count299
-\c@bookmark@seq@number=\count300
+\Fld@listcount=\count304
+\c@bookmark@seq@number=\count305
 
 (C:\Program Files\MiKTeX\tex/latex/rerunfilecheck\rerunfilecheck.sty
 Package: rerunfilecheck 2022-07-10 v1.10 Rerun checks for auxiliary files (HO)
@@ -338,7 +357,7 @@ Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 85.
 )
-\Hy@SectionHShift=\skip55
+\Hy@SectionHShift=\skip59
 )
 (C:\Program Files\MiKTeX\tex/latex/geometry\geometry.sty
 Package: geometry 2020/01/02 v5.9 Page Geometry
@@ -346,22 +365,22 @@ Package: geometry 2020/01/02 v5.9 Page Geometry
 (C:\Program Files\MiKTeX\tex/generic/iftex\ifvtex.sty
 Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
 )
-\Gm@cnth=\count301
-\Gm@cntv=\count302
-\c@Gm@tempcnt=\count303
-\Gm@bindingoffset=\dimen176
-\Gm@wd@mp=\dimen177
-\Gm@odd@mp=\dimen178
-\Gm@even@mp=\dimen179
-\Gm@layoutwidth=\dimen180
-\Gm@layoutheight=\dimen181
-\Gm@layouthoffset=\dimen182
-\Gm@layoutvoffset=\dimen183
-\Gm@dimlist=\toks26
+\Gm@cnth=\count306
+\Gm@cntv=\count307
+\c@Gm@tempcnt=\count308
+\Gm@bindingoffset=\dimen177
+\Gm@wd@mp=\dimen178
+\Gm@odd@mp=\dimen179
+\Gm@even@mp=\dimen180
+\Gm@layoutwidth=\dimen181
+\Gm@layoutheight=\dimen182
+\Gm@layouthoffset=\dimen183
+\Gm@layoutvoffset=\dimen184
+\Gm@dimlist=\toks27
 
 (C:\Program Files\MiKTeX\tex/latex/geometry\geometry.cfg))
 Package translations Info: No language package found. I am going to use `englis
-h' as default language. on input line 19.
+h' as default language. on input line 20.
 
 (C:\Program Files\MiKTeX\tex/latex/graphics\color.sty
 Package: color 2022/01/06 v1.3d Standard LaTeX Color (DPC)
@@ -374,30 +393,30 @@ Package color Info: Driver file: pdftex.def on input line 149.
 (C:\Program Files\MiKTeX\tex/latex/graphics\mathcolor.ltx))
 (C:\Program Files\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def
 File: l3backend-pdftex.def 2023-04-19 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count304
-\l__pdf_internal_box=\box63
+\l__color_backend_stack_int=\count309
+\l__pdf_internal_box=\box68
 )
 (benchmark_report.aux)
 \openout1 = `benchmark_report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 20.
+LaTeX Font Info:    ... okay on input line 20.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 20.
+LaTeX Font Info:    ... okay on input line 20.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 20.
+LaTeX Font Info:    ... okay on input line 20.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 20.
+LaTeX Font Info:    ... okay on input line 20.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 20.
+LaTeX Font Info:    ... okay on input line 20.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 20.
+LaTeX Font Info:    ... okay on input line 20.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 20.
+LaTeX Font Info:    ... okay on input line 20.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 20.
+LaTeX Font Info:    ... okay on input line 20.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 20.
+LaTeX Font Info:    ... okay on input line 20.
 
 (C:\Program Files\MiKTeX\tex/latex/translations/dicts\translations-basic-dictio
 nary-english.trsl
@@ -405,20 +424,20 @@ File: translations-basic-dictionary-english.trsl (english translation file `tra
 nslations-basic-dictionary')
 )
 Package translations Info: loading dictionary `translations-basic-dictionary' f
-or `english'. on input line 19.
+or `english'. on input line 20.
  (C:\Program Files\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count305
-\scratchdimen=\dimen184
-\scratchbox=\box64
-\nofMPsegments=\count306
-\nofMParguments=\count307
-\everyMPshowfont=\toks27
-\MPscratchCnt=\count308
-\MPscratchDim=\dimen185
-\MPnumerator=\count309
-\makeMPintoPDFobject=\count310
-\everyMPtoPDFconversion=\toks28
+\scratchcounter=\count310
+\scratchdimen=\dimen185
+\scratchbox=\box69
+\nofMPsegments=\count311
+\nofMParguments=\count312
+\everyMPshowfont=\toks28
+\MPscratchCnt=\count313
+\MPscratchDim=\dimen186
+\MPnumerator=\count314
+\makeMPintoPDFobject=\count315
+\everyMPtoPDFconversion=\toks29
 ) (C:\Program Files\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
@@ -427,7 +446,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 (C:\Program Files\MiKTeX\tex/latex/00miktex\epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
-Package hyperref Info: Link coloring OFF on input line 19.
+Package hyperref Info: Link coloring OFF on input line 20.
 
 (benchmark_report.out) (benchmark_report.out)
 \@outlinefile=\write3
@@ -468,12 +487,12 @@ Package hyperref Info: Link coloring OFF on input line 19.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-LaTeX Font Info:    Trying to load font information for U+msa on input line 21.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 22.
 
 (C:\Program Files\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 21.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 22.
 
 
 (C:\Program Files\MiKTeX\tex/latex/amsfonts\umsb.fd
@@ -481,87 +500,105 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 {C:/Users/vmuno/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
-Overfull \hbox (77.24606pt too wide) in paragraph at lines 94--95
-[]\T1/cmr/bx/n/10.95 Backend prop-er-ties SHA256: \T1/cmr/m/n/10.95 598197e9424
-d1e8e66a78b3ea2b757c0764275fccf68d90b6428d2da96b3e7dd
+Overfull \hbox (59.71667pt too wide) in paragraph at lines 95--96
+[]\T1/cmr/bx/n/10.95 Backend prop-er-ties SHA256: \T1/cmr/m/n/10.95 b4b99c09efa
+3f78ea45100f6a6101d036aa389f074ff4f4499147fc339ffbb5d
  []
 
 LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 1
-08.
+09.
 (C:\Program Files\MiKTeX\tex/latex/base\t1cmtt.fd
 File: t1cmtt.fd 2023/04/13 v2.5m Standard LaTeX font definitions
 )
-Overfull \hbox (26.93138pt too wide) in paragraph at lines 108--109
+Overfull \hbox (26.93138pt too wide) in paragraph at lines 109--110
 \T1/cmr/m/n/10.95 post_routing_2q_breakdown, ex-e-cu-tion_time_seconds, pop-u-l
 a-tion_target_state, hellinger_fidelity,
  []
 
 [2]
-Overfull \hbox (3.98746pt too wide) in paragraph at lines 128--136
+Overfull \hbox (3.98746pt too wide) in paragraph at lines 129--137
  [][] 
  []
 
 
-Overfull \hbox (4.7817pt too wide) in paragraph at lines 153--154
+Overfull \hbox (4.7817pt too wide) in paragraph at lines 154--155
 \T1/cmr/m/n/10.95 op-ti-mizer_level, shots, n_repeats, mean_depth, mean_2q_tota
 l, mean_compile_time_seconds,
  []
 
 
-Overfull \hbox (11.47987pt too wide) in paragraph at lines 153--154
+Overfull \hbox (11.47987pt too wide) in paragraph at lines 154--155
 \T1/cmr/m/n/10.95 mean_execution_time_seconds, mean_peak_tracemalloc_mib, mean_
 population_target_state,
  []
 
-<fig_runtime.pdf, id=105, 296.83524pt x 195.53365pt>
+<fig_runtime.pdf, id=117, 296.83524pt x 195.53365pt>
 File: fig_runtime.pdf Graphic file (type pdf)
 <use fig_runtime.pdf>
-Package pdftex.def Info: fig_runtime.pdf  used on input line 180.
+Package pdftex.def Info: fig_runtime.pdf  used on input line 181.
 (pdftex.def)             Requested size: 386.96027pt x 254.9187pt.
 [3]
-<fig_circuit.pdf, id=114, 296.78377pt x 195.48846pt>
+<fig_circuit.pdf, id=126, 296.78377pt x 195.48846pt>
 File: fig_circuit.pdf Graphic file (type pdf)
 <use fig_circuit.pdf>
-Package pdftex.def Info: fig_circuit.pdf  used on input line 187.
+Package pdftex.def Info: fig_circuit.pdf  used on input line 188.
 (pdftex.def)             Requested size: 386.96027pt x 254.88666pt.
-<fig_memory.pdf, id=115, 246.24622pt x 173.80746pt>
+<fig_memory.pdf, id=127, 246.24622pt x 173.80746pt>
 File: fig_memory.pdf Graphic file (type pdf)
 <use fig_memory.pdf>
-Package pdftex.def Info: fig_memory.pdf  used on input line 194.
+Package pdftex.def Info: fig_memory.pdf  used on input line 195.
 (pdftex.def)             Requested size: 295.90588pt x 208.88086pt.
-<fig_hardware.pdf, id=116, 296.99017pt x 195.53365pt>
+<fig_hardware.pdf, id=128, 296.99017pt x 195.53365pt>
 File: fig_hardware.pdf Graphic file (type pdf)
 <use fig_hardware.pdf>
-Package pdftex.def Info: fig_hardware.pdf  used on input line 201.
+Package pdftex.def Info: fig_hardware.pdf  used on input line 202.
 (pdftex.def)             Requested size: 386.96027pt x 254.78444pt.
 
-Overfull \hbox (82.02795pt too wide) in paragraph at lines 216--217
+Overfull \hbox (82.02795pt too wide) in paragraph at lines 217--218
 []\T1/cmr/m/n/10.95 Full nor-mal-ized count dis-tri-bu-tions are stored in \T1/
 cmtt/m/n/10.95 raw_runs_quick.jsonl \T1/cmr/m/n/10.95 and \T1/cmtt/m/n/10.95 be
 nchmark_results_quick.json
  []
 
 
-Overfull \hbox (179.91496pt too wide) in paragraph at lines 226--227
+Overfull \hbox (179.91496pt too wide) in paragraph at lines 227--228
 []\T1/cmr/m/n/10.95 Calibration con-sis-tency: same \T1/cmtt/m/n/10.95 backend_
 properties_sha256 \T1/cmr/m/n/10.95 for both frame-works; \T1/cmtt/m/n/10.95 ca
 libration_match_with_paired_framework
  []
 
-[4 <./fig_runtime.pdf>] [5 <./fig_circuit.pdf> <./fig_memory.pdf>] [6 <./fig_ha
-rdware.pdf>] (benchmark_report.aux)
+[4 <./fig_runtime.pdf>] [5 <./fig_circuit.pdf> <./fig_memory.pdf>]
+(sweep_tables.tex)
+Overfull \hbox (22.00873pt too wide) in paragraph at lines 273--274
+ []\T1/cmr/bx/n/10.95 Figures.[] \T1/cmr/m/n/10.95 Fig-ure []5[]: opt-level com
+-par-i-son (mean depth vs. op-ti-miza-tion level). Fig-ure []6[]: opt_level=3
+ []
+
+<fig_sweep_opt_levels.pdf, id=254, 318.29854pt x 210.84584pt>
+File: fig_sweep_opt_levels.pdf Graphic file (type pdf)
+<use fig_sweep_opt_levels.pdf>
+Package pdftex.def Info: fig_sweep_opt_levels.pdf  used on input line 281.
+(pdftex.def)             Requested size: 386.96027pt x 256.34035pt.
+[6 <./fig_hardware.pdf>] [7]
+<fig_sweep_qubits.pdf, id=311, 498.97354pt x 241.8341pt>
+File: fig_sweep_qubits.pdf Graphic file (type pdf)
+<use fig_sweep_qubits.pdf>
+Package pdftex.def Info: fig_sweep_qubits.pdf  used on input line 292.
+(pdftex.def)             Requested size: 386.96027pt x 187.54494pt.
+ [8 <./fig_sweep_opt_levels.pdf> <./fig_sweep_qubits.pdf>] (benchmark_report.au
+x)
  ***********
 LaTeX2e <2023-06-01> patch level 1
 L3 programming layer <2023-08-29>
  ***********
 Package rerunfilecheck Info: File `benchmark_report.out' has not changed.
-(rerunfilecheck)             Checksum: BFD0FD1ECF6CCF5478698FD6DCD3D3FC;3607.
+(rerunfilecheck)             Checksum: 3B39B870C5150C79836C70768F42AEE8;4125.
  ) 
 Here is how much of TeX's memory you used:
- 14480 strings out of 475248
- 281051 string characters out of 5767628
- 1932785 words of memory out of 5000000
- 35804 multiletter control sequences out of 15000+600000
+ 14607 strings out of 475248
+ 283188 string characters out of 5767628
+ 1953785 words of memory out of 5000000
+ 35917 multiletter control sequences out of 15000+600000
  572476 words of font info for 73 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,12n,80p,594b,1117s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -579,9 +616,9 @@ ic/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/
 cm/cmmi8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb>
 <C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Program Fi
 les/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on benchmark_report.pdf (6 pages, 237353 bytes).
+Output written on benchmark_report.pdf (8 pages, 289801 bytes).
 PDF statistics:
- 640 PDF objects out of 1000 (max. 8388607)
- 43 named destinations out of 1000 (max. 500000)
- 173 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 799 PDF objects out of 1000 (max. 8388607)
+ 52 named destinations out of 1000 (max. 500000)
+ 207 words of extra memory for PDF output out of 10000 (max. 10000000)
 

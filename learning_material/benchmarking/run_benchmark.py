@@ -1,15 +1,19 @@
 """
 Qiskit vs PyTket IBM Torino QFT Roundtrip Benchmark
 
-Runs the benchmark defined in llm.json:
+Runs the benchmark defined in llm.json (or --config):
 - Circuit: X_ALL, QFT, IQFT, MEASURE_ALL
-- Qubit counts: 5, 10, 15, 20, 25, 30, 35, 40
 - Frameworks: Qiskit, PyTket with optimization levels 0-3
 - Backend: IBM Torino (real hardware)
 - Metrics: compile time, memory, depth, 2Q count, population, Hellinger fidelity
 
+Configs:
+- llm.json / llm_quick.json: quick or full grid (see README).
+- llm_opt_qubit_sweep.json: Compare opt_level 0,1,2,3 and measure opt_level=3
+  vs qubit counts 10, 20, 30, 40, 50 on real hardware (5×4×2 = 40 runs).
+
 Usage:
-    python run_benchmark.py [--config path/to/llm.json] [--dry-run]
+    python run_benchmark.py [--config path/to/llm.json] [--dry-run] [--qiskit-only]
 """
 
 from __future__ import annotations

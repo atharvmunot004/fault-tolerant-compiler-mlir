@@ -6,6 +6,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
+\usepackage{longtable}
 \usepackage{siunitx}
 \usepackage{graphicx}
 \usepackage{hyperref}
@@ -91,14 +92,14 @@ This report uses the quick configuration (subset of full llm.json grid):
   \item \textbf{Optimizer level:} 0 (both frameworks)
   \item \textbf{Shots per run:} 512
   \item \textbf{Repetitions per configuration:} 1
-  \item \textbf{Backend properties SHA256:} 598197e9424d1e8e66a78b3ea2b757c0764275fccf68d90b6428d2da96b3e7dd (same for both frameworks; calibration consistency).
+  \item \textbf{Backend properties SHA256:} b4b99c09efa3f78ea45100f6a6101d036aa389f074ff4f4499147fc339ffbb5d (same for both frameworks; calibration consistency).
 \end{itemize}
 
 \subsection{System and metadata}
 \begin{itemize}
   \item \textbf{Platform:} Windows-11-10.0.26200-SP0
   \item \textbf{Python:} 3.12.10
-  \item \textbf{Timestamp (UTC):} 2026-02-25T05:40:56
+  \item \textbf{Timestamp (UTC):} 2026-02-26T04:42:26
   \item \textbf{Framework versions:} Qiskit 2.3.0; PyTket 2.13.0
 \end{itemize}
 
@@ -115,8 +116,8 @@ Per llm.json \texttt{per\_run\_record\_fields}: timestamp\_utc, framework, frame
 \toprule
 Framework & Backend & \(n_{\mathrm{qubits}}\) & opt & Shots & Compile (s) & Exec (s) & Depth & 2Q total \\
 \midrule
-Qiskit    & ibm\_torino & 5 & 0 & 512 & 1.971 & 7.062 & 352 & 106 \\
-PyTket    & ibm\_torino & 5 & 0 & 512 & 0.426 & 6.186 & 250 & 78  \\
+Qiskit    & ibm\_torino & 5 & 0 & 512 & 2.010 & 8.330 & 352 & 106 \\
+PyTket    & ibm\_torino & 5 & 0 & 512 & 0.769 & 7.362 & 250 & 78  \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -129,8 +130,8 @@ PyTket    & ibm\_torino & 5 & 0 & 512 & 0.426 & 6.186 & 250 & 78  \\
 \toprule
 Framework & Peak tracemalloc (MiB) & Population target & Hellinger fid. & Calibration match \\
 \midrule
-Qiskit & 7.10 & 0.2285 & 0.2775 & yes \\
-PyTket & 0.638 & 0.4707 & 0.4397 & yes \\
+Qiskit & 7.12 & 0.1719 & 0.2349 & yes \\
+PyTket & 0.656 & 0.4668 & 0.4372 & yes \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -143,7 +144,7 @@ Per llm.json \texttt{two\_qubit\_gate\_set\_preference} and per-gate breakdown:
 \end{itemize}
 
 \subsection{Calibration consistency}
-\texttt{backend\_properties\_sha256} is identical for both runs (598197e9...), so calibration match with paired framework is satisfied for this report.
+\texttt{backend\_properties\_sha256} is identical for both runs (b4b99c09...), so calibration match with paired framework is satisfied for this report.
 
 \textbf{Note:} PyTket circuits were compiled with PyTket then converted to Qiskit and executed via the Qiskit Runtime Sampler (job mode) for compatibility with the IBM open plan; compilation metrics and 2Q breakdown are from PyTket, execution time is wall time of the Qiskit Sampler run.
 
@@ -161,8 +162,8 @@ Per llm.json \texttt{per\_configuration\_aggregate\_fields}: framework, backend\
 \toprule
 Framework & \(n_{\mathrm{qubits}}\) & opt & mean depth & mean 2Q & mean compile (s) & mean exec (s) & mean MiB & mean pop. & mean \(F_H\) \\
 \midrule
-Qiskit & 5 & 0 & 352 & 106 & 1.971 & 7.062 & 7.10 & 0.2285 & 0.2775 \\
-PyTket & 5 & 0 & 250 & 78  & 0.426 & 6.186 & 0.638 & 0.4707 & 0.4397 \\
+Qiskit & 5 & 0 & 352 & 106 & 2.010 & 8.330 & 7.12 & 0.1719 & 0.2349 \\
+PyTket & 5 & 0 & 250 & 78  & 0.769 & 7.362 & 0.656 & 0.4668 & 0.4372 \\
 \bottomrule
 \end{tabular}%
 }
@@ -209,8 +210,8 @@ All plots use the primary statistic (mean) per llm.json aggregation. Data: \(n_{
 Expected ideal outcome: \texttt{11111} (msb\_left, \(n_{\mathrm{qubits}}=5\)).
 
 \begin{itemize}
-  \item \textbf{Qiskit:} \(P(\texttt{11111}) = 0.2285\).
-  \item \textbf{PyTket:} \(P(\texttt{11111}) = 0.4707\).
+  \item \textbf{Qiskit:} \(P(\texttt{11111}) = 0.1719\).
+  \item \textbf{PyTket:} \(P(\texttt{11111}) = 0.4668\).
 \end{itemize}
 
 Full normalized count distributions are stored in \texttt{raw\_runs\_quick.jsonl} and \texttt{benchmark\_results\_quick.json} (\texttt{counts\_normalized}).
@@ -226,5 +227,73 @@ Full normalized count distributions are stored in \texttt{raw\_runs\_quick.jsonl
   \item Calibration consistency: same \texttt{backend\_properties\_sha256} for both frameworks; \texttt{calibration\_match\_with\_paired\_framework} = true.
   \item Reproducibility: fixed seed 12345; system info and config recorded in metadata.
 \end{enumerate}
+
+%-----------
+\section{Opt-level comparison and opt\_level=3 qubit sweep}
+
+This section documents the extended benchmark (\texttt{llm\_opt\_qubit\_sweep.json}): comparison of optimization levels 0, 1, 2, 3 and performance of opt\_level=3 across qubit counts 10, 20, 30, 40, 50 on real quantum hardware (ibm\_torino).
+
+\subsection{Configuration}
+\begin{itemize}
+  \item \textbf{Qubit counts:} 10, 20, 30, 40, 50
+  \item \textbf{Optimizer levels:} 0, 1, 2, 3 (both frameworks)
+  \item \textbf{Shots per run:} 512; \textbf{Repetitions:} 1 per configuration
+  \item \textbf{Total runs:} 5 qubit counts \(\times\) 4 opt levels \(\times\) 2 frameworks = 40 jobs on real hardware
+\end{itemize}
+
+\subsection{Results}
+
+Results from the benchmark run are in Table~\ref{tab:opt-qubit-sweep} and Figures~\ref{fig:sweep-opt}--\ref{fig:sweep-qubits}. The benchmark writes \texttt{benchmark\_results\_opt\_qubit\_sweep.json} and \texttt{raw\_runs\_opt\_qubit\_sweep.jsonl}. To regenerate the table and figures after a new run:
+\begin{verbatim}
+python generate_sweep_tables.py
+python plot_sweep_figures.py
+\end{verbatim}
+
+\IfFileExists{sweep_tables.tex}{%
+  \input{sweep_tables.tex}%
+}{%
+Table~\ref{tab:opt-qubit-sweep} (below) will be populated from \texttt{benchmark\_results\_opt\_qubit\_sweep.json} after running the benchmark and \texttt{python generate\_sweep\_tables.py}.
+
+\begin{table}[htbp]
+\centering
+\caption{Aggregates: opt-level comparison and opt\_level=3 qubit sweep (mean). Run benchmark and \texttt{generate\_sweep\_tables.py} to replace with data.}
+\label{tab:opt-qubit-sweep}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llccccccc}
+\toprule
+Framework & \(n_{\mathrm{qubits}}\) & opt & mean depth & mean 2Q & mean compile (s) & mean exec (s) & mean pop. & mean \(F_H\) \\
+\midrule
+\multicolumn{9}{c}{\textit{No data yet. Run \texttt{llm\_opt\_qubit\_sweep.json} then \texttt{generate\_sweep\_tables.py}.}} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+}
+
+\paragraph{Figures.} Figure~\ref{fig:sweep-opt}: opt-level comparison (mean depth vs.\ optimization level). Figure~\ref{fig:sweep-qubits}: opt\_level=3 scaling with qubit count.
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{fig_sweep_opt_levels.pdf}{%
+    \includegraphics[width=0.85\textwidth]{fig_sweep_opt_levels.pdf}%
+  }{%
+    \fbox{\parbox{0.85\textwidth}{\centering\vspace{2cm}Placeholder: opt-level comparison (0--3).\\ Run \texttt{llm\_opt\_qubit\_sweep.json} and \texttt{plot\_sweep\_figures.py} to generate.\vspace{2cm}}}
+  }
+  \caption{Opt-level comparison: mean depth or compile time vs.\ optimization level (e.g.\ at \(n_{\mathrm{qubits}}=10\)).}
+  \label{fig:sweep-opt}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{fig_sweep_qubits.pdf}{%
+    \includegraphics[width=0.85\textwidth]{fig_sweep_qubits.pdf}%
+  }{%
+    \fbox{\parbox{0.85\textwidth}{\centering\vspace{2cm}Placeholder: opt\_level=3 qubit sweep (10--50).\\ Run \texttt{llm\_opt\_qubit\_sweep.json} and \texttt{plot\_sweep\_figures.py} to generate.\vspace{2cm}}}
+  }
+  \caption{Qubit sweep at opt\_level=3: mean depth vs.\ qubit count (10--50). Left: Qiskit; right: PyTket (PyTket opt=3 reports depth=2 for all qubit counts in this run, shown for completeness).}
+  \label{fig:sweep-qubits}
+\end{figure}
+
+\noindent\textbf{Note:} opt\_level=3 is expected to yield lower depth and 2Q count (better performance) at the cost of longer compile time. The qubit sweep (10--50) shows how depth, execution time, and result quality scale with problem size at highest optimization.
 
 \end{document}
