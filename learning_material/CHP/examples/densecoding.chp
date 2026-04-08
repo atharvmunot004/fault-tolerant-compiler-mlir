@@ -1,0 +1,16 @@
+Dense coding: send 2 classical bits using 1 EPR pair and 1 qubit.
+Input: zz=00, zZ=01, Zz=10, ZZ=11 (stored in qubits 0,1).
+EPR on 2,3; Alice encodes into 2; 2 copied to 4; Bob decodes 4,3.
+#
+h 2
+c 2 3
+c 1 2
+h 2
+c 0 2
+h 2
+c 2 4
+c 4 2
+c 4 3
+h 4
+m 4
+m 3

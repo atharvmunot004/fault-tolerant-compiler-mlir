@@ -1,0 +1,31 @@
+Simon's algorithm: hidden shift s=11111.
+f(a,b,c,d,e)=(a+b,b+c,c+d,d+e). Qubits 0-4 first reg, 5-8 second reg.
+First measure 5-8 (random), then H on 0-4 and measure (y such that y.s=0).
+#
+h 0
+h 1
+h 2
+h 3
+h 4
+c 0 5
+c 1 5
+c 1 6
+c 2 6
+c 2 7
+c 3 7
+c 3 8
+c 4 8
+m 5
+m 6
+m 7
+m 8
+h 0
+h 1
+h 2
+h 3
+h 4
+m 0
+m 1
+m 2
+m 3
+m 4
