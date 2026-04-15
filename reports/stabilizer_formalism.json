@@ -1,0 +1,172 @@
+{
+    "task": "Generate a Jupyter notebook (.ipynb) on Stabilizer Formalism in quantum computing, built from first principles, with theory cells, executable code demonstrations, and mathematical exposition using LaTeX in markdown cells",
+    "output_file": "stabilizer_formalism.ipynb",
+    "dependencies": [
+      "numpy",
+      "qiskit",
+      "qiskit-aer",
+      "matplotlib",
+      "IPython"
+    ],
+    "notebook_structure": {
+      "kernel": "python3",
+      "language": "python"
+    },
+    "cells": [
+      {
+        "cell_id": 1,
+        "type": "markdown",
+        "content": "# Stabilizer Formalism in Quantum Computing\n### A First-Principles Introduction\n---\n**What this notebook covers:**\n- The Pauli group and its algebraic structure\n- What it means for a state to be 'stabilized'\n- Stabilizer states and their tableau representation\n- Clifford gates and how they act on stabilizers\n- Measurement in the stabilizer formalism\n- The Gottesman-Knill theorem\n- Application to quantum error correction\n- Magic states and the limits of stabilizer methods\n\n> **Prerequisites:** Linear algebra, basic quantum mechanics (bra-ket notation, qubits, unitary gates), familiarity with Python."
+      },
+      {
+        "cell_id": 2,
+        "type": "code",
+        "purpose": "Setup and imports",
+        "content": "Install and import all dependencies. Import numpy as np, matplotlib.pyplot as plt, and from qiskit: QuantumCircuit, Pauli, SparsePauliOp, Statevector, StabilizerState. Import from qiskit_aer if needed. Set matplotlib inline. Print version info for reproducibility."
+      },
+      {
+        "cell_id": 3,
+        "type": "markdown",
+        "content": "## 1. Why Stabilizer Formalism Exists\n\nSimulating an $n$-qubit quantum state naively requires storing $2^n$ complex amplitudes.\n\n| Qubits | Amplitudes | Memory (complex128) |\n|--------|------------|---------------------|\n| 10 | 1,024 | ~16 KB |\n| 20 | 1,048,576 | ~16 MB |\n| 30 | ~10^9 | ~16 GB |\n| 50 | ~10^15 | ~16 PB |\n\nThe stabilizer formalism (Gottesman, 1997) identifies a structured subset of quantum states — **stabilizer states** — that can be described with only $O(n^2)$ classical bits. The key theorem:\n\n> **Gottesman-Knill Theorem:** Any quantum circuit consisting of Clifford gates, computational basis preparations, and Pauli measurements can be efficiently simulated classically in $O(n^2)$ space and $O(n^2)$ time per operation.\n\nThis is not because these circuits are 'not quantum' — they create entanglement and superposition. It is because their structure is algebraically tractable."
+      },
+      {
+        "cell_id": 4,
+        "type": "markdown",
+        "content": "## 2. The Pauli Group\n\n### 2.1 Single-Qubit Paulis\n\nThe four single-qubit Pauli matrices are:\n\n$$I = \\begin{pmatrix}1&0\\\\0&1\\end{pmatrix}, \\quad X = \\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}, \\quad Y = \\begin{pmatrix}0&-i\\\\i&0\\end{pmatrix}, \\quad Z = \\begin{pmatrix}1&0\\\\0&-1\\end{pmatrix}$$\n\nKey properties:\n- Each is **Hermitian**: $P^\\dagger = P$\n- Each squares to identity: $P^2 = I$\n- Each has eigenvalues $\\{+1, -1\\}$\n- Any two distinct Paulis **anticommute**: $\\{X, Z\\} = XZ + ZX = 0$\n\n### 2.2 The $n$-Qubit Pauli Group\n\nThe $n$-qubit Pauli group $\\mathcal{P}_n$ consists of all $n$-fold tensor products of single-qubit Paulis, with phases from $\\{\\pm 1, \\pm i\\}$:\n\n$$\\mathcal{P}_n = \\{ i^k \\, P_1 \\otimes P_2 \\otimes \\cdots \\otimes P_n \\mid k \\in \\{0,1,2,3\\},\\ P_j \\in \\{I, X, Y, Z\\} \\}$$\n\nSize: $|\\mathcal{P}_n| = 4^{n+1}$.\n\n### 2.3 Commutation Rule\n\nTwo $n$-qubit Paulis $P, Q \\in \\mathcal{P}_n$ either commute ($PQ = QP$) or anticommute ($PQ = -QP$). They anticommute if and only if the number of qubit positions where they have **anticommuting single-qubit factors** is **odd**."
+      },
+      {
+        "cell_id": 5,
+        "type": "code",
+        "purpose": "Define and display the Pauli matrices, verify their properties",
+        "content": "Define I, X, Y, Z as 2x2 numpy complex arrays. Print each matrix. Verify: (1) P^2 = I for each, (2) eigenvalues are ±1 using np.linalg.eigh, (3) XZ = -ZX (anticommutation), (4) XY = iZ, YZ = iX, ZX = iY (multiplication table). Print results with clear labels. Also implement a function `commutes(P, Q)` that returns True if PQ == QP elementwise, and test all pairs."
+      },
+      {
+        "cell_id": 6,
+        "type": "code",
+        "purpose": "Pauli multiplication table visualization",
+        "content": "Create a 4x4 matplotlib table showing the result of multiplying any two Paulis (ignoring phase). Rows and columns labeled I, X, Y, Z. Fill cells with the resulting Pauli label and phase. Use a color scheme: identity=white, X=light blue, Y=light green, Z=light orange. Title: 'Single-Qubit Pauli Multiplication Table'."
+      },
+      {
+        "cell_id": 7,
+        "type": "markdown",
+        "content": "## 3. Stabilizer States\n\n### 3.1 What It Means to Be Stabilized\n\nA non-zero state $|\\psi\\rangle$ is **stabilized** by operator $P$ if:\n$$P|\\psi\\rangle = |\\psi\\rangle$$\nThat is, $|\\psi\\rangle$ is a $+1$ eigenstate of $P$.\n\n**Examples:**\n- $Z|0\\rangle = |0\\rangle$ — so $|0\\rangle$ is stabilized by $Z$\n- $X|{+}\\rangle = |{+}\\rangle$ — so $|{+}\\rangle$ is stabilized by $X$\n- $Z|1\\rangle = -|1\\rangle$ — so $|1\\rangle$ is stabilized by $-Z$\n\n### 3.2 The Stabilizer Group\n\nThe **stabilizer group** of $|\\psi\\rangle$ is:\n$$\\mathcal{S}(|\\psi\\rangle) = \\{ P \\in \\mathcal{P}_n \\mid P|\\psi\\rangle = |\\psi\\rangle \\}$$\n\nThis is always a group (closed under multiplication, contains $I$). For an $n$-qubit stabilizer state, $\\mathcal{S}$ is generated by exactly $n$ **independent, mutually commuting** Pauli operators that do not include $-I$.\n\n### 3.3 Why Generators Must Commute\n\nIf $A|\\psi\\rangle = |\\psi\\rangle$ and $B|\\psi\\rangle = |\\psi\\rangle$, then $AB|\\psi\\rangle = A|\\psi\\rangle = |\\psi\\rangle$. But if $A$ and $B$ anticommuted — $AB = -BA$ — then:\n$$AB|\\psi\\rangle = |\\psi\\rangle \\implies BA|\\psi\\rangle = -|\\psi\\rangle$$\nwhich contradicts $A|\\psi\\rangle = |\\psi\\rangle$ applied after $B$. So generators **must commute**.\n\n### 3.4 Uniqueness\n\nFor $n$ independent commuting Pauli generators (not containing $-I$), the $+1$ joint eigenspace has dimension exactly $2^{n-k}$ where $k$ is the number of independent generators. With exactly $n$ generators for $n$ qubits, the eigenspace is 1-dimensional — a unique state."
+      },
+      {
+        "cell_id": 8,
+        "type": "code",
+        "purpose": "Verify stabilizer examples numerically",
+        "content": "Define state vectors: ket_0 = [1,0], ket_1 = [0,1], ket_plus = [1,1]/sqrt(2), ket_minus = [1,-1]/sqrt(2), ket_plus_i = [1,1j]/sqrt(2), ket_minus_i = [1,-1j]/sqrt(2). Write a function `is_stabilized(state, operator)` that checks if operator @ state ≈ state using np.allclose. Run a table of checks: each state against its expected stabilizer and destabilizer. Print a formatted results table. Also verify that anticommuting generators cannot share a +1 eigenstate: show X @ Z gives -Z @ X."
+      },
+      {
+        "cell_id": 9,
+        "type": "code",
+        "purpose": "Visualize common single-qubit stabilizer states on the Bloch sphere",
+        "content": "Use matplotlib to draw a Bloch sphere (wireframe sphere with axes). Mark the 6 stabilizer states as labeled points: |0> at north pole, |1> at south pole, |+> at +X, |-> at -X, |+i> at +Y, |-i> at -Y. Use different colors for +1 eigenstates of X (blue), Y (green), Z (red). Add a legend and title 'The 6 Single-Qubit Stabilizer States on the Bloch Sphere'. Draw dashed lines from origin to each point."
+      },
+      {
+        "cell_id": 10,
+        "type": "markdown",
+        "content": "## 4. The Stabilizer Tableau\n\n### 4.1 Binary Representation of Paulis\n\nEvery $n$-qubit Pauli can be encoded as a binary vector of length $2n$ plus a sign bit:\n\n$$P = i^s \\cdot X^{x_1}Z^{z_1} \\otimes X^{x_2}Z^{z_2} \\otimes \\cdots \\otimes X^{x_n}Z^{z_n}$$\n\nwhere $x_j, z_j \\in \\{0,1\\}$. The encoding:\n\n| $x_j$ | $z_j$ | Pauli on qubit $j$ |\n|--------|--------|--------------------|\n| 0 | 0 | $I$ |\n| 1 | 0 | $X$ |\n| 0 | 1 | $Z$ |\n| 1 | 1 | $Y$ |\n\nA generator $g_i$ is stored as a row: $[x_{i,1}, \\ldots, x_{i,n} \\mid z_{i,1}, \\ldots, z_{i,n} \\mid r_i]$ where $r_i \\in \\{0,1\\}$ encodes sign ($0 \\to +1$, $1 \\to -1$).\n\n### 4.2 The Full Tableau\n\nFor $n$ qubits, the stabilizer tableau is a $(2n \\times (2n+1))$ binary matrix:\n- **Rows 1 to $n$:** Destabilizer generators $\\bar{g}_1, \\ldots, \\bar{g}_n$\n- **Rows $n+1$ to $2n$:** Stabilizer generators $g_1, \\ldots, g_n$\n- **Last column:** Sign bits\n\nThe initial tableau for $|0\\rangle^{\\otimes n}$ has destabilizers $X_i$ and stabilizers $Z_i$ for each qubit $i$."
+      },
+      {
+        "cell_id": 11,
+        "type": "code",
+        "purpose": "Implement a StabilizerTableau class from scratch",
+        "content": "Implement a Python class `StabilizerTableau` with:\n- `__init__(self, n)`: Initialize n-qubit |0...0> state. tableau is (2n x 2n+1) numpy uint8 array. Destabilizers: row i has x[i,i]=1 (X on qubit i). Stabilizers: row n+i has z[i,i]=1 (Z on qubit i). All signs 0.\n- `x_block`: property returning tableau[:, :n]\n- `z_block`: property returning tableau[:, n:2n]\n- `signs`: property returning tableau[:, 2n]\n- `pauli_label(row)`: returns human-readable string like '+ZXI' for a row\n- `display()`: prints the tableau in a formatted grid showing destabilizers (labeled D) then stabilizers (labeled S), with column headers x1..xn z1..zn r\n- `state_str()`: returns a string listing all stabilizer generators in Pauli notation\nTest it by creating a 3-qubit tableau and displaying it. Verify the initial state |000> has stabilizers [ZII, IZI, IIZ]."
+      },
+      {
+        "cell_id": 12,
+        "type": "markdown",
+        "content": "## 5. Clifford Gates\n\n### 5.1 The Clifford Group\n\nA unitary $U$ is a **Clifford gate** if it maps the Pauli group to itself under conjugation:\n$$\\forall P \\in \\mathcal{P}_n: \\quad U P U^\\dagger \\in \\mathcal{P}_n$$\n\nThis is the key property: Cliffords **permute** the Paulis. So if $P|\\psi\\rangle = |\\psi\\rangle$, then $(UPU^\\dagger)(U|\\psi\\rangle) = U|\\psi\\rangle$. The new state $U|\\psi\\rangle$ is stabilized by $UPU^\\dagger$.\n\n**Consequence for simulation:** To apply $U$ to a stabilizer state, replace each generator $g_i \\to U g_i U^\\dagger$. No matrix exponentiation — just conjugation rules.\n\n### 5.2 Single-Qubit Clifford Conjugation Rules\n\n$$H X H^\\dagger = Z, \\quad H Z H^\\dagger = X, \\quad H Y H^\\dagger = -Y$$\n$$S X S^\\dagger = Y, \\quad S Z S^\\dagger = Z, \\quad S Y S^\\dagger = -X$$\n\n### 5.3 CNOT Conjugation Rules\n(control qubit $c$, target qubit $t$)\n\n$$\\text{CNOT}: \\quad X_c I_t \\to X_c X_t, \\quad I_c X_t \\to I_c X_t$$\n$$\\text{CNOT}: \\quad Z_c I_t \\to Z_c I_t, \\quad I_c Z_t \\to Z_c Z_t$$\n\nThese four rules, extended by linearity across qubit positions, fully define CNOT's action on any Pauli."
+      },
+      {
+        "cell_id": 13,
+        "type": "code",
+        "purpose": "Verify Clifford conjugation rules numerically",
+        "content": "Define H = [[1,1],[1,-1]]/sqrt(2), S = [[1,0],[0,1j]] as numpy arrays. Write function `conjugate(U, P)` = U @ P @ U.conj().T. Verify all conjugation rules: H@X@H†=Z, H@Z@H†=X, H@Y@H†=-Y, S@X@S†=Y, S@Z@S†=Z, S@Y@S†=-X. Print each rule with LHS computed numerically and compare to expected RHS using np.allclose. For CNOT, define CNOT as 4x4 matrix. Verify XI→XX, IX→IX, ZI→ZI, IZ→ZZ using tensor products. Print all results with pass/fail."
+      },
+      {
+        "cell_id": 14,
+        "type": "code",
+        "purpose": "Implement gate operations on the StabilizerTableau",
+        "content": "Extend StabilizerTableau with gate methods implementing the Aaronson-Gottesman CHP update rules:\n- `apply_h(self, qubit)`: For each row i: if x[i,q] and z[i,q] both 1, flip sign. Then swap x[i,q] and z[i,q].\n- `apply_s(self, qubit)`: For each row i: if x[i,q] and z[i,q] both 1, flip sign. Then set z[i,q] ^= x[i,q].\n- `apply_cnot(self, control, target)`: For each row i: sign ^= x[i,c] & z[i,t] & (x[i,t] ^ z[i,c] ^ 1). Then x[i,t] ^= x[i,c]. Then z[i,c] ^= z[i,t].\nDemo: Start with |0> tableau, apply H to qubit 0 to get |+>, verify stabilizer is +X. Then start fresh, apply H to qubit 0 then CNOT(0,1) to create Bell state |Φ+>, verify stabilizers are XX and ZZ. Display tableau at each step."
+      },
+      {
+        "cell_id": 15,
+        "type": "markdown",
+        "content": "## 6. Measurement in the Stabilizer Formalism\n\nMeasuring Pauli $M$ on a stabilizer state with generators $\\{g_1, \\ldots, g_n\\}$ has two cases:\n\n### Case 1: $M$ Commutes With All Generators\n\nThe measurement outcome is **deterministic**. The post-measurement state is unchanged. To find the outcome:\n- Extend the stabilizer generators to the full group (closure under multiplication)\n- If $M \\in \\mathcal{S}$, outcome is $+1$\n- If $-M \\in \\mathcal{S}$, outcome is $-1$\n\nIn the tableau algorithm: use the destabilizer rows to determine the outcome via a sequence of row multiplications.\n\n### Case 2: $M$ Anticommutes With at Least One Generator\n\nThe outcome is **random** ($+1$ or $-1$, each with probability $\\frac{1}{2}$). After measurement with outcome $(-1)^b$:\n1. Let $g_p$ be any generator anticommuting with $M$ (the pivot)\n2. For every other generator $g_i$ anticommuting with $M$: replace $g_i \\leftarrow g_i \\cdot g_p$\n3. Replace $g_p \\leftarrow (-1)^b \\cdot M$\n4. Update destabilizers analogously\n\nCost: $O(n)$ row operations → $O(n^2)$ total. No exponential overhead.\n\n### Key Insight\n\nMeasurement in the stabilizer formalism is a **tableau surgery operation**: it never requires computing the full wavefunction."
+      },
+      {
+        "cell_id": 16,
+        "type": "code",
+        "purpose": "Implement measurement on StabilizerTableau",
+        "content": "Add `measure(self, qubit)` method to StabilizerTableau following the Aaronson-Gottesman algorithm:\n- Find if any stabilizer row p has x[p, qubit]=1 (anticommutes with Z measurement on this qubit)\n- If found (random case): randomly choose outcome b in {0,1}. For all other rows i (both destabilizer and stabilizer) where x[i,qubit]=1, rowmul(i, p). Set destabilizer row p = stabilizer row p. Set stabilizer row p to Z on this qubit with sign b. Return b.\n- If not found (deterministic case): compute outcome using destabilizer rows. Return outcome.\n- Implement helper `rowmul(self, i, j)` that multiplies row i by row j and updates sign correctly using the Pauli phase tracking formula.\nDemo: Create Bell state |Φ+>, measure qubit 0 ten times (re-creating state each time), show that outcomes are random. Then measure ZZ on the Bell state — show it always gives +1."
+      },
+      {
+        "cell_id": 17,
+        "type": "markdown",
+        "content": "## 7. The Gottesman-Knill Theorem\n\n**Theorem (Gottesman 1997, Knill):** The following operations can be efficiently simulated on a classical computer:\n1. Preparation of qubits in computational basis states\n2. Application of Clifford gates: $H$, $S$, $\\text{CNOT}$\n3. Measurement of Pauli observables\n\n**Simulation cost:** $O(n^2)$ bits of memory, $O(n^2)$ time per operation.\n\n### What Clifford Circuits Can Do\n| Capability | Clifford Circuits |\n|-----------|-------------------|\n| Create superposition | ✓ ($H|0\\rangle = |{+}\\rangle$) |\n| Create entanglement | ✓ (Bell states via $H$ + CNOT) |\n| Achieve quantum parallelism | ✓ |\n| **Universal quantum computation** | ✗ |\n| Classical efficient simulation | ✓ |\n\n### What Breaks the Classicality\n\nAdding the **T gate** ($T = \\text{diag}(1, e^{i\\pi/4})$) to the Clifford group yields a **universal** gate set. The T gate takes:\n$$T X T^\\dagger = \\frac{X + Y}{\\sqrt{2}}$$\nThis is outside the Pauli group — T is not Clifford. The resource that T injects is called **magic**."
+      },
+      {
+        "cell_id": 18,
+        "type": "code",
+        "purpose": "Demonstrate and benchmark the stabilizer simulator",
+        "content": "Benchmark StabilizerTableau against numpy statevector simulation. Write function `random_clifford_circuit(n, depth)` that generates a random sequence of H, S, CNOT gates. Write `simulate_tableau(n, circuit)` using StabilizerTableau. Write `simulate_statevector(n, circuit)` using matrix multiplication with numpy. For n in [2,4,8,16,32], depth=50: measure wall-clock time for tableau sim. For n in [2,4,8,10]: also measure statevector sim time (cap at n=10 due to memory). Plot both on a log-scale graph: x-axis=n, y-axis=time_ms. Title: 'Classical Simulation Time: Stabilizer Tableau vs Statevector'. Show the exponential divergence clearly."
+      },
+      {
+        "cell_id": 19,
+        "type": "markdown",
+        "content": "## 8. Quantum Error Correction with Stabilizer Codes\n\n### 8.1 The Stabilizer Code Framework\n\nA **stabilizer code** $[[n, k, d]]$ encodes $k$ logical qubits into $n$ physical qubits with distance $d$:\n- The **codespace** is the $+1$ eigenspace of an abelian group $\\mathcal{S}$ of $n-k$ independent Pauli generators called **check operators** (or stabilizers)\n- **Logical operators** $\\bar{X}_i$, $\\bar{Z}_i$ act on the encoded qubits and commute with $\\mathcal{S}$ but are not in $\\mathcal{S}$\n- An **error** $E$ is detectable if $E$ anticommutes with at least one element of $\\mathcal{S}$\n- The **syndrome** is the tuple of $\\pm 1$ measurement outcomes of the check operators\n\n### 8.2 Error Detection Mechanism\n\n$$|\\psi_L\\rangle \\xrightarrow{\\text{error } E} E|\\psi_L\\rangle \\xrightarrow{\\text{measure } g_i} \\begin{cases} +1 & \\text{if } [E, g_i] = 0 \\\\ -1 & \\text{if } \\{E, g_i\\} = 0 \\end{cases}$$\n\nThe pattern of $-1$ outcomes (the syndrome) identifies the error — without measuring the logical qubit itself, which would collapse the encoded information."
+      },
+      {
+        "cell_id": 20,
+        "type": "code",
+        "purpose": "Implement the 3-qubit bit-flip code",
+        "content": "Implement the [[3,1,1]] bit-flip code from scratch using StabilizerTableau.\n- Encode |0_L> = |000>, |1_L> = |111>\n- Stabilizers: ZZI, IZZ\n- Logical X_L = XXX, Logical Z_L = ZII\n- Write `encode(logical_bit)` that prepares the encoded state\n- Write `inject_error(tableau, qubit)` that applies X to a qubit\n- Write `measure_syndrome(tableau)` that measures ZZI and IZZ, returns (s1, s2)\n- Write `decode_syndrome(s1, s2)` that returns which qubit to correct: {(+1,+1): None, (-1,+1): qubit 0, (-1,-1): qubit 1, (+1,-1): qubit 2}\n- Run a demo: encode |0_L>, inject each possible single-qubit X error, measure syndrome, print syndrome and correction. Show that logical state is recovered in each case. Format output as a table."
+      },
+      {
+        "cell_id": 21,
+        "type": "code",
+        "purpose": "Implement and verify the Steane [[7,1,3]] code",
+        "content": "Define the Steane code [[7,1,3]] stabilizer generators as Pauli strings:\nStabilizers: IIIXXXX, IXXIIXX, XIXIXIX, IIIZZZZ, IZZIIZZ, ZIZIZIZ\nLogical X_L = XXXXXXX, Logical Z_L = ZZZZZZZ\nUsing Qiskit's StabilizerState or SparsePauliOp:\n- Verify all 6 generators mutually commute\n- Verify logical operators commute with all generators\n- Verify X_L and Z_L anticommute with each other (they should, as logical X and Z)\n- Print a 6x6 commutation matrix showing [g_i, g_j] = 0 for all pairs\n- Print commutation of logical operators with each generator\nLabel everything clearly."
+      },
+      {
+        "cell_id": 22,
+        "type": "markdown",
+        "content": "## 9. Beyond Stabilizers: Magic States and the T Gate\n\n### 9.1 The T Gate Breaks Stabilizer Structure\n\nThe T gate is:\n$$T = \\begin{pmatrix}1 & 0 \\\\ 0 & e^{i\\pi/4}\\end{pmatrix}$$\n\nUnder conjugation:\n$$T X T^\\dagger = \\frac{X + Y}{\\sqrt{2}} \\notin \\mathcal{P}_1$$\n\nSo T is **not Clifford**. Applying T to a stabilizer state produces a **non-stabilizer state** (generically).\n\n### 9.2 Magic States\n\nA **magic state** is any state that cannot be expressed as a stabilizer state. The prototypical example is the T-type magic state:\n$$|T\\rangle = T|{+}\\rangle = \\frac{|0\\rangle + e^{i\\pi/4}|1\\rangle}{\\sqrt{2}}$$\n\nThis state is not stabilized by any Pauli (its Bloch vector points to $(\\frac{1}{\\sqrt{2}}, \\frac{1}{\\sqrt{2}}, 0) \\cdot \\frac{1}{\\sqrt{2}}$... wait, more precisely it lies off all Pauli axes).\n\n### 9.3 Why T-Count Matters\n\nIn fault-tolerant quantum computing, Clifford gates are cheap (transversal in most codes). T gates require **magic state distillation** — a costly purification protocol. As a result:\n- T-count is the dominant cost metric in fault-tolerant resource estimation\n- Reducing T-count is an active research area\n- Classical simulation cost scales exponentially in T-count (not circuit depth)"
+      },
+      {
+        "cell_id": 23,
+        "type": "code",
+        "purpose": "Demonstrate magic states and the limits of stabilizer simulation",
+        "content": "Define T = diag([1, exp(i*pi/4)]) as numpy array. Compute |T> = T @ ket_plus. Check: is |T> stabilized by any Pauli? Write function `find_stabilizer(state)` that checks all 6 non-identity single-qubit Paulis (±X, ±Y, ±Z) and returns the stabilizing ones. Call it on |0>, |1>, |+>, |-> and |T>. Show that |T> has no Pauli stabilizer. Plot |T> on the Bloch sphere alongside the 6 stabilizer states — it should lie off all axes. Also verify: T X T† ≠ Pauli by computing numerically and checking if result is proportional to any of I,X,Y,Z."
+      },
+      {
+        "cell_id": 24,
+        "type": "code",
+        "purpose": "Simulate a small Clifford+T circuit with Qiskit and compare to tableau",
+        "content": "Build a 3-qubit Qiskit QuantumCircuit that is purely Clifford: H on q0, CNOT(0,1), S on q2, H on q2, CNOT(1,2). Simulate with Qiskit Aer statevector simulator. Also simulate the same circuit with StabilizerTableau step by step. For each gate, print the stabilizer generators after that gate. At the end, compare measurement probability distributions: sample 1000 shots from each and compute total variation distance. Print the stabilizer table at each step as a formatted display."
+      },
+      {
+        "cell_id": 25,
+        "type": "markdown",
+        "content": "## 10. Conceptual Summary\n\n### The Big Picture\n\n```\nAll n-qubit quantum states (2^n complex amplitudes)\n        |\n        ├── Stabilizer states (O(n²) bits)\n        │         |\n        │         ├── Clifford circuits preserve this set\n        │         ├── Pauli measurements stay efficient\n        │         └── Gottesman-Knill: classically simulable\n        │\n        └── Non-stabilizer states (magic states)\n                  |\n                  ├── Generated by T gate applied to stabilizer states\n                  ├── Required for universal quantum computation\n                  └── T-count measures simulation hardness\n```\n\n### Reference Table: Stabilizer Formalism in One Page\n\n| Concept | Definition | Why It Matters |\n|---------|-----------|----------------|\n| Pauli group $\\mathcal{P}_n$ | $n$-fold Pauli tensor products ± phase | Algebraic foundation |\n| Stabilizer group | Abelian Pauli subgroup fixing $|\\psi\\rangle$ | Compact state encoding |\n| Stabilizer state | Uniquely fixed by $n$ independent Paulis | $O(n^2)$ classical representation |\n| Clifford gate | Unitary normalizing $\\mathcal{P}_n$ | Tableau-updatable |\n| Destabilizer | Conjugate generators | Enables deterministic measurement |\n| Stabilizer tableau | $2n \\times (2n+1)$ binary matrix | The simulation data structure |\n| Gottesman-Knill | Clifford circuits $\\Rightarrow$ poly simulation | Core efficiency theorem |\n| Stabilizer code | Codespace = $+1$ eigenspace of checks | Quantum error correction |\n| Magic state | Any non-stabilizer state | Resource for universality |\n| T-count | Number of T gates in circuit | Fault-tolerant resource cost |\n\n### Further Reading\n- Gottesman (1997) — *Stabilizer Codes and Quantum Error Correction* (PhD thesis, Caltech)\n- Aaronson & Gottesman (2004) — *Improved simulation of stabilizer circuits*, PRA 70, 052328\n- Nielsen & Chuang (2000) — *Quantum Computation and Quantum Information*, Chapter 10\n- Gottesman (2009) — *Introduction to QEC and Fault-Tolerant QC*, arXiv:0904.2557\n- Gidney (2021) — *Stim: A fast stabilizer circuit simulator*, Quantum 5, 497"
+      },
+      {
+        "cell_id": 26,
+        "type": "code",
+        "purpose": "Final interactive demo — build intuition through exploration",
+        "content": "Create an interactive demo that lets the user build a small stabilizer circuit step by step.\nDefine a 3-qubit StabilizerTableau. Apply a sequence of operations: H(0), CNOT(0,1), CNOT(0,2) to create GHZ state (|000>+|111>)/√2. After each step, print: (1) the stabilizer generators in Pauli notation, (2) a brief English description of what state this is, (3) the sign of each generator.\nVerify the GHZ state has stabilizers: XXX, ZZI, ZIZ (or equivalent generating set).\nThen measure qubit 0: show that the outcome is random and the post-measurement state collapses the other two qubits deterministically (both to |00> or both to |11>).\nRepeat measurement 20 times and plot a bar chart of outcomes, confirming 50/50 distribution for qubit 0 but 100% correlation between qubits 1 and 2."
+      }
+    ],
+    "implementation_notes": [
+      "Each code cell should have a markdown comment header identifying which section it belongs to",
+      "The StabilizerTableau class should be defined once in cell 11 and extended with new methods in subsequent cells — either by redefining the class fully each time or using inheritance",
+      "Prefer redefining the full class in a single cell (cell 11) with all methods, and reference it throughout",
+      "All matplotlib figures should use plt.tight_layout() and be displayed inline",
+      "The rowmul helper in measurement must correctly track Pauli phase accumulation using the i^(2*x*z) formula from Aaronson-Gottesman Table 1",
+      "For the benchmark in cell 18, use time.perf_counter and take median of 5 runs per configuration",
+      "If Qiskit is unavailable, cells 21 and 24 can fall back to numpy-only implementations with a warning printed",
+      "The notebook should run top-to-bottom without errors on a standard Python environment with the listed dependencies"
+    ]
+  }
