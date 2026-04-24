@@ -9,33 +9,34 @@ def _row_mult_phase(x1: int, z1: int, x2: int, z2: int) -> int:
     Phase update helper used by Aaronson–Gottesman tableau row multiplication.
     Returns exponent of i (mod 4) contributed by multiplying single-qubit Paulis.
     """
-    # Map (x,z) -> Pauli: (0,0)=I, (1,0)=X, (0,1)=Z, (1,1)=Y.
-    # Multiplication rule phase for P1*P2 is determined by commutation.
-    # Use compact table of i-exponent e where P1*P2 = i^e * P3.
-    # Order: I, X, Z, Y as indices 0..3 with bits (x,z) but Y is 3.
-    def idx(x: int, z: int) -> int:
-        if x == 0 and z == 0:
-            return 0
-        if x == 1 and z == 0:
-            return 1
-        if x == 0 and z == 1:
-            return 2
-        return 3  # Y
+    # Identity contributes no phase.
+    if (x1 == 0 and z1 == 0) or (x2 == 0 and z2 == 0):
+        return 0
 
-    # Table from Pauli multiplication; entries are i-exponents mod 4.
-    # rows * cols:
-    # I X Z Y
-    # I 0 0 0 0
-    # X 0 0 1 3
-    # Z 0 3 0 1
-    # Y 0 1 3 0
-    phase = [
-        [0, 0, 0, 0],
-        [0, 0, 1, 3],
-        [0, 3, 0, 1],
-        [0, 1, 3, 0],
-    ]
-    return phase[idx(x1, z1)][idx(x2, z2)]
+    # Matching Paulis also contribute no phase.
+    if x1 == x2 and z1 == z2:
+        return 0
+
+    # Explicit non-commuting Pauli multiplication phases:
+    # XZ = +iY, ZX = -iY
+    if x1 == 1 and z1 == 0 and x2 == 0 and z2 == 1:
+        return 1
+    if x1 == 0 and z1 == 1 and x2 == 1 and z2 == 0:
+        return 3
+
+    # ZY = +iX, YZ = -iX
+    if x1 == 0 and z1 == 1 and x2 == 1 and z2 == 1:
+        return 1
+    if x1 == 1 and z1 == 1 and x2 == 0 and z2 == 1:
+        return 3
+
+    # YX = +iZ, XY = -iZ
+    if x1 == 1 and z1 == 1 and x2 == 1 and z2 == 0:
+        return 1
+    if x1 == 1 and z1 == 0 and x2 == 1 and z2 == 1:
+        return 3
+
+    raise ValueError("invalid Pauli bits for row multiplication")
 
 
 class StabilizerState:
