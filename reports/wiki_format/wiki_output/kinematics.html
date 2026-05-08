@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kinematics — Classical Mechanics</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- KaTeX for math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'\\[',right:'\\]',display:true},
+      {left:'\\(',right:'\\)',display:false},
+      {left:'$',right:'$',display:false}
+    ]});"></script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-title">Classical Mechanics</a>
+  <button type="button" id="back-btn" class="nav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg> Back</button>
+  <div class="nav-breadcrumb">
+    <a href="index.html" class="crumb">Newtonian Mechanics</a><span class="sep">/</span><span class="current">Kinematics</span>
+  </div>
+  <div class="search-wrap">
+    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search-input" placeholder="Search nodes…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</nav>
+
+<main>
+  <header class="page-header">
+    <h1>Kinematics</h1>
+    <div class="page-tags"><span class="tag">motion</span><span class="tag">velocity</span><span class="tag">acceleration</span></div>
+  </header>
+
+  <article class="content">
+    <h2 id="kinematics">Kinematics</h2>
+
+<p>Kinematics is the branch of mechanics that describes <strong>motion purely geometrically</strong> --- positions, velocities, and accelerations --- without asking <em>why</em> the object moves.</p>
+
+<h2 id="key-quantities">Key Quantities</h2>
+
+<div class="table-wrap"><table><thead><tr><th>Quantity</th><th>Symbol</th><th>Unit</th></tr></thead><tbody><tr><td>Position</td><td>$\vec{r}$</td><td>m</td></tr><tr><td>Velocity</td><td>$\vec{v} = \dot{\vec{r}}$</td><td>m/s</td></tr><tr><td>Acceleration</td><td>$\vec{a} = \ddot{\vec{r}}$</td><td>m/s$^2$</td></tr></tbody></table></div>
+
+<h2 id="equations-of-motion-constant-acceleration">Equations of Motion (Constant Acceleration)</h2>
+
+<p>For uniform acceleration $a$:</p>
+
+<p>\[ v = v_0 + at \]</p>
+
+<p>\[ x = x_0 + v_0 t + \tfrac{1}{2} a t^2 \]</p>
+
+<p>\[ v^2 = v_0^2 + 2a(x - x_0) \]</p>
+
+<h2 id="projectile-motion">Projectile Motion</h2>
+
+<p>A classic application: under gravity $g$, horizontal and vertical motion are <strong>independent</strong>. The trajectory is a parabola.</p>
+
+<p>\[ x(t) = v_0 \cos\theta \cdot t, \quad y(t) = v_0 \sin\theta \cdot t - \tfrac{1}{2} g t^2 \]</p>
+
+<h2 id="related-topics">Related Topics</h2>
+
+<ul>
+  <li><a href="newtonian_mechanics.html" class="wiki-link">Newtonian Mechanics</a> --- Back to the overview</li>
+  <li><a href="dynamics.html" class="wiki-link">Dynamics</a> --- Add forces to the picture</li>
+  <li><a href="reference_frames.html" class="wiki-link">Reference Frames</a> --- How motion looks from different perspectives</li>
+</ul>
+  </article>
+
+  
+  <section class="related-section">
+    <h3>Connected Nodes</h3>
+    <div class="related-grid">
+        <a href="dynamics.html" class="related-card">
+          <div class="rc-title">Dynamics</div>
+          <div class="rc-arrow">→</div>
+        </a>
+        <a href="newtonian_mechanics.html" class="related-card">
+          <div class="rc-title">Newtonian Mechanics</div>
+          <div class="rc-arrow">→</div>
+        </a>
+        <a href="reference_frames.html" class="related-card">
+          <div class="rc-title">Reference Frames</div>
+          <div class="rc-arrow">→</div>
+        </a>
+    </div>
+  </section>
+</main>
+
+<a href="#" id="scroll-top" aria-label="Scroll to top">↑</a>
+
+<script>
+
+// Search
+const INDEX = [{"id": "newtonian_mechanics", "title": "Newtonian Mechanics", "tags": ["foundation", "newton", "classical"]}, {"id": "kinematics", "title": "Kinematics", "tags": ["motion", "velocity", "acceleration"]}, {"id": "dynamics", "title": "Dynamics", "tags": ["forces", "newton", "differential equations"]}, {"id": "energy_work", "title": "Energy & Work", "tags": ["energy", "conservation", "work"]}, {"id": "momentum", "title": "Momentum", "tags": ["momentum", "conservation", "collisions"]}, {"id": "lagrangian", "title": "Lagrangian Mechanics", "tags": ["lagrangian", "analytical mechanics", "advanced"]}, {"id": "reference_frames", "title": "Reference Frames", "tags": ["frames", "relativity", "rotating"]}];
+let pyodideReady = null;
+
+function escapePyForExec(src) {
+  const normalized = src.replaceAll(String.fromCharCode(13), '');
+  const indented = normalized.split('\n').map(line => `        ${line}`).join('\n');
+  return `import io, contextlib, traceback
+__wiki_buf = io.StringIO()
+with contextlib.redirect_stdout(__wiki_buf), contextlib.redirect_stderr(__wiki_buf):
+    try:
+${indented}
+    except Exception:
+        traceback.print_exc()
+__wiki_out = __wiki_buf.getvalue()
+`;
+}
+
+async function ensurePyodide() {
+  if (pyodideReady) return pyodideReady;
+  pyodideReady = (async () => {
+    if (!window.loadPyodide) {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js';
+        s.onload = resolve;
+        s.onerror = () => reject(new Error('Failed to load pyodide.js'));
+        document.head.appendChild(s);
+      });
+    }
+    const py = await window.loadPyodide();
+    return py;
+  })();
+  return pyodideReady;
+}
+
+const input = document.getElementById('search-input');
+const results = document.getElementById('search-results');
+
+if (input) {
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.classList.remove('visible'); return; }
+    const hits = INDEX.filter(n =>
+      n.title.toLowerCase().includes(q) ||
+      (n.tags || []).some(t => t.includes(q))
+    ).slice(0, 6);
+    if (!hits.length) { results.classList.remove('visible'); return; }
+    results.innerHTML = hits.map(n =>
+      `<a class="sr-item" href="${n.id}.html">
+        <div class="sr-item-title">${n.title}</div>
+        <div class="sr-item-tags">${(n.tags||[]).join(' · ')}</div>
+      </a>`
+    ).join('');
+    results.classList.add('visible');
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) results.classList.remove('visible');
+  });
+}
+
+// Scroll-to-top
+const scrollBtn = document.getElementById('scroll-top');
+if (scrollBtn) {
+  window.addEventListener('scroll', () => {
+    scrollBtn.classList.toggle('visible', window.scrollY > 300);
+  });
+}
+
+// Back: history is unreliable for file:// and some redirects; prefer real back then home
+const backBtn = document.getElementById('back-btn');
+if (backBtn) {
+  backBtn.type = 'button';
+  backBtn.addEventListener('click', () => {
+    const ref = document.referrer;
+    let sameOrigin = false;
+    try {
+      if (ref) sameOrigin = new URL(ref).origin === window.location.origin;
+    } catch (e) {}
+    if (ref && sameOrigin && ref !== window.location.href) {
+      window.history.back();
+    } else {
+      window.location.href = 'index.html';
+    }
+  });
+}
+
+// Pyodide runner
+document.querySelectorAll('.run-py-btn').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    const host = btn.closest('.code-runner');
+    const out = host ? host.querySelector('.py-output') : null;
+    if (!out) return;
+    const code = atob(btn.dataset.codeB64 || '');
+    btn.disabled = true;
+    out.textContent = 'Running in browser Python...';
+    try {
+      const py = await ensurePyodide();
+      await py.runPythonAsync(escapePyForExec(code));
+      const pyOutObj = py.globals.get('__wiki_out');
+      const pyOut = pyOutObj ? pyOutObj.toString() : '';
+      if (pyOutObj && typeof pyOutObj.destroy === 'function') pyOutObj.destroy();
+      out.textContent = pyOut || '(no output)';
+    } catch (err) {
+      out.textContent = `Error: ${err && err.message ? err.message : String(err)}`;
+    } finally {
+      btn.disabled = false;
+    }
+  });
+});
+
+</script>
+</body>
+</html>

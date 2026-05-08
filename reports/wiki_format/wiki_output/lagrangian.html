@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lagrangian Mechanics — Classical Mechanics</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- KaTeX for math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'\\[',right:'\\]',display:true},
+      {left:'\\(',right:'\\)',display:false},
+      {left:'$',right:'$',display:false}
+    ]});"></script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-title">Classical Mechanics</a>
+  <button type="button" id="back-btn" class="nav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg> Back</button>
+  <div class="nav-breadcrumb">
+    <a href="index.html" class="crumb">Newtonian Mechanics</a><span class="sep">/</span><span class="current">Lagrangian Mechanics</span>
+  </div>
+  <div class="search-wrap">
+    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search-input" placeholder="Search nodes…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</nav>
+
+<main>
+  <header class="page-header">
+    <h1>Lagrangian Mechanics</h1>
+    <div class="page-tags"><span class="tag">lagrangian</span><span class="tag">analytical mechanics</span><span class="tag">advanced</span></div>
+  </header>
+
+  <article class="content">
+    <h2 id="lagrangian-mechanics">Lagrangian Mechanics</h2>
+
+<p>Lagrangian mechanics is an elegant <strong>reformulation of classical mechanics</strong> that replaces forces with energy --- making it vastly more powerful for complex systems.</p>
+
+<h2 id="the-lagrangian">The Lagrangian</h2>
+
+<p>Defined as kinetic minus potential energy:</p>
+
+<p>\[ \mathcal{L}(q, \dot{q}, t) = T - V \]</p>
+
+<p>where $q$ are <strong>generalized coordinates</strong> --- any coordinates that describe the system's configuration.</p>
+
+<h2 id="the-euler-lagrange-equations">The Euler--Lagrange Equations</h2>
+
+<p>The equations of motion follow from the <strong>principle of stationary action</strong>:</p>
+
+<p>\[ \frac{d}{dt}\frac{\partial \mathcal{L}}{\partial \dot{q}_i} - \frac{\partial \mathcal{L}}{\partial q_i} = 0 \]</p>
+
+<p>One equation per degree of freedom. For a single particle in 1D, this recovers $F = ma$.</p>
+
+<h2 id="why-it-s-powerful">Why It's Powerful</h2>
+
+<p>\begin{enumerate}
+\item <strong>Coordinate-free:</strong> Choose any convenient coordinates --- polar, spherical, anything
+\item <strong>Constraints are automatic:</strong> No need to explicitly handle normal forces
+\item <strong>Symmetry $\to$ Conservation:</strong> Noether's theorem connects every symmetry to a conserved quantity
+\end{enumerate}</p>
+
+<h2 id="example-simple-pendulum">Example: Simple Pendulum</h2>
+
+<p>Using angle $\theta$ as the generalized coordinate:</p>
+
+<p>\[ \mathcal{L} = \tfrac{1}{2} m \ell^2 \dot{\theta}^2 - mg\ell(1-\cos\theta) \]</p>
+
+<p>The Euler--Lagrange equation gives:</p>
+
+<p>\[ \ddot{\theta} + \frac{g}{\ell}\sin\theta = 0 \]</p>
+
+<h2 id="related-topics">Related Topics</h2>
+
+<ul>
+  <li><a href="dynamics.html" class="wiki-link">Dynamics</a> --- Newtonian approach to forces</li>
+  <li><a href="energy_work.html" class="wiki-link">Energy &amp; Work</a> --- The energy quantities used here</li>
+  <li><a href="newtonian_mechanics.html" class="wiki-link">Newtonian Mechanics</a> --- Where it all begins</li>
+</ul>
+  </article>
+
+  
+  <section class="related-section">
+    <h3>Connected Nodes</h3>
+    <div class="related-grid">
+        <a href="dynamics.html" class="related-card">
+          <div class="rc-title">Dynamics</div>
+          <div class="rc-arrow">→</div>
+        </a>
+        <a href="energy_work.html" class="related-card">
+          <div class="rc-title">Energy & Work</div>
+          <div class="rc-arrow">→</div>
+        </a>
+    </div>
+  </section>
+</main>
+
+<a href="#" id="scroll-top" aria-label="Scroll to top">↑</a>
+
+<script>
+
+// Search
+const INDEX = [{"id": "newtonian_mechanics", "title": "Newtonian Mechanics", "tags": ["foundation", "newton", "classical"]}, {"id": "kinematics", "title": "Kinematics", "tags": ["motion", "velocity", "acceleration"]}, {"id": "dynamics", "title": "Dynamics", "tags": ["forces", "newton", "differential equations"]}, {"id": "energy_work", "title": "Energy & Work", "tags": ["energy", "conservation", "work"]}, {"id": "momentum", "title": "Momentum", "tags": ["momentum", "conservation", "collisions"]}, {"id": "lagrangian", "title": "Lagrangian Mechanics", "tags": ["lagrangian", "analytical mechanics", "advanced"]}, {"id": "reference_frames", "title": "Reference Frames", "tags": ["frames", "relativity", "rotating"]}];
+let pyodideReady = null;
+
+function escapePyForExec(src) {
+  const normalized = src.replaceAll(String.fromCharCode(13), '');
+  const indented = normalized.split('\n').map(line => `        ${line}`).join('\n');
+  return `import io, contextlib, traceback
+__wiki_buf = io.StringIO()
+with contextlib.redirect_stdout(__wiki_buf), contextlib.redirect_stderr(__wiki_buf):
+    try:
+${indented}
+    except Exception:
+        traceback.print_exc()
+__wiki_out = __wiki_buf.getvalue()
+`;
+}
+
+async function ensurePyodide() {
+  if (pyodideReady) return pyodideReady;
+  pyodideReady = (async () => {
+    if (!window.loadPyodide) {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js';
+        s.onload = resolve;
+        s.onerror = () => reject(new Error('Failed to load pyodide.js'));
+        document.head.appendChild(s);
+      });
+    }
+    const py = await window.loadPyodide();
+    return py;
+  })();
+  return pyodideReady;
+}
+
+const input = document.getElementById('search-input');
+const results = document.getElementById('search-results');
+
+if (input) {
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.classList.remove('visible'); return; }
+    const hits = INDEX.filter(n =>
+      n.title.toLowerCase().includes(q) ||
+      (n.tags || []).some(t => t.includes(q))
+    ).slice(0, 6);
+    if (!hits.length) { results.classList.remove('visible'); return; }
+    results.innerHTML = hits.map(n =>
+      `<a class="sr-item" href="${n.id}.html">
+        <div class="sr-item-title">${n.title}</div>
+        <div class="sr-item-tags">${(n.tags||[]).join(' · ')}</div>
+      </a>`
+    ).join('');
+    results.classList.add('visible');
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) results.classList.remove('visible');
+  });
+}
+
+// Scroll-to-top
+const scrollBtn = document.getElementById('scroll-top');
+if (scrollBtn) {
+  window.addEventListener('scroll', () => {
+    scrollBtn.classList.toggle('visible', window.scrollY > 300);
+  });
+}
+
+// Back: history is unreliable for file:// and some redirects; prefer real back then home
+const backBtn = document.getElementById('back-btn');
+if (backBtn) {
+  backBtn.type = 'button';
+  backBtn.addEventListener('click', () => {
+    const ref = document.referrer;
+    let sameOrigin = false;
+    try {
+      if (ref) sameOrigin = new URL(ref).origin === window.location.origin;
+    } catch (e) {}
+    if (ref && sameOrigin && ref !== window.location.href) {
+      window.history.back();
+    } else {
+      window.location.href = 'index.html';
+    }
+  });
+}
+
+// Pyodide runner
+document.querySelectorAll('.run-py-btn').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    const host = btn.closest('.code-runner');
+    const out = host ? host.querySelector('.py-output') : null;
+    if (!out) return;
+    const code = atob(btn.dataset.codeB64 || '');
+    btn.disabled = true;
+    out.textContent = 'Running in browser Python...';
+    try {
+      const py = await ensurePyodide();
+      await py.runPythonAsync(escapePyForExec(code));
+      const pyOutObj = py.globals.get('__wiki_out');
+      const pyOut = pyOutObj ? pyOutObj.toString() : '';
+      if (pyOutObj && typeof pyOutObj.destroy === 'function') pyOutObj.destroy();
+      out.textContent = pyOut || '(no output)';
+    } catch (err) {
+      out.textContent = `Error: ${err && err.message ? err.message : String(err)}`;
+    } finally {
+      btn.disabled = false;
+    }
+  });
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamics — Classical Mechanics</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- KaTeX for math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'\\[',right:'\\]',display:true},
+      {left:'\\(',right:'\\)',display:false},
+      {left:'$',right:'$',display:false}
+    ]});"></script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-title">Classical Mechanics</a>
+  <button type="button" id="back-btn" class="nav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg> Back</button>
+  <div class="nav-breadcrumb">
+    <a href="index.html" class="crumb">Newtonian Mechanics</a><span class="sep">/</span><span class="current">Dynamics</span>
+  </div>
+  <div class="search-wrap">
+    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search-input" placeholder="Search nodes…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</nav>
+
+<main>
+  <header class="page-header">
+    <h1>Dynamics</h1>
+    <div class="page-tags"><span class="tag">forces</span><span class="tag">newton</span><span class="tag">differential equations</span></div>
+  </header>
+
+  <article class="content">
+    <h2 id="dynamics">Dynamics</h2>
+
+<p>Dynamics studies the <strong>relationship between forces and motion</strong>. While kinematics asks <em>how</em> an object moves, dynamics asks <em>why</em>.</p>
+
+<h2 id="newton-s-second-law-in-depth">Newton's Second Law in Depth</h2>
+
+<p>The central equation of dynamics:</p>
+
+<p>\[ \vec{F}_{\mathrm{net}} = m\vec{a} = \frac{d\vec{p}}{dt} \]</p>
+
+<p>This is actually a <strong>differential equation</strong> --- solving it given initial conditions and force laws yields the full trajectory.</p>
+
+<h2 id="runtime-sanity-snippet">Runtime Sanity Snippet</h2>
+
+<div class="code-runner"><pre><code class="lang-python">import math
+m = 2.0
+a = 9.81
+F = m * a
+print(f"F = m*a = {F:.2f} N")
+print("sin(pi/2) =", math.sin(math.pi / 2))</code></pre><div class="code-runner-actions"><button type="button" class="run-py-btn" data-code-b64="aW1wb3J0IG1hdGgKbSA9IDIuMAphID0gOS44MQpGID0gbSAqIGEKcHJpbnQoZiJGID0gbSphID0ge0Y6LjJmfSBOIikKcHJpbnQoInNpbihwaS8yKSA9IiwgbWF0aC5zaW4obWF0aC5waSAvIDIpKQ==">Run in Browser (Pyodide)</button></div><pre class="py-output" aria-live="polite"></pre></div>
+
+<h2 id="common-force-laws">Common Force Laws</h2>
+
+<h3 id="gravity-near-earth">Gravity (Near Earth)</h3>
+
+<p>\[ \vec{F}_g = -mg\,\hat{\jmath} \]</p>
+
+<h3 id="hooke-s-law-spring">Hooke's Law (Spring)</h3>
+
+<p>\[ \vec{F}_s = -k\vec{x} \]</p>
+
+<h3 id="friction">Friction</h3>
+
+<p>\[ f_k = \mu_k N, \quad f_s \leq \mu_s N \]</p>
+
+<h2 id="free-body-diagrams">Free Body Diagrams</h2>
+
+<p>The essential tool: isolate the object, draw <strong>every</strong> force acting on it, then write $\sum F = ma$ for each direction.</p>
+
+<h2 id="lagrangian-mechanics">Lagrangian Mechanics</h2>
+
+<p>A more powerful reformulation of dynamics using energy rather than forces:</p>
+
+<p>\[ \mathcal{L} = T - V \]</p>
+
+<p>The equations of motion follow from the <a href="lagrangian.html" class="wiki-link">Lagrangian Mechanics</a> principle of least action.</p>
+
+<h2 id="related-topics">Related Topics</h2>
+
+<ul>
+  <li><a href="newtonian_mechanics.html" class="wiki-link">Newtonian Mechanics</a> --- The three laws</li>
+  <li><a href="kinematics.html" class="wiki-link">Kinematics</a> --- Describing the resulting motion</li>
+  <li><a href="energy_work.html" class="wiki-link">Energy &amp; Work</a> --- Energy perspective on dynamics</li>
+</ul>
+  </article>
+
+  
+  <section class="related-section">
+    <h3>Connected Nodes</h3>
+    <div class="related-grid">
+        <a href="kinematics.html" class="related-card">
+          <div class="rc-title">Kinematics</div>
+          <div class="rc-arrow">→</div>
+        </a>
+        <a href="lagrangian.html" class="related-card">
+          <div class="rc-title">Lagrangian Mechanics</div>
+          <div class="rc-arrow">→</div>
+        </a>
+        <a href="newtonian_mechanics.html" class="related-card">
+          <div class="rc-title">Newtonian Mechanics</div>
+          <div class="rc-arrow">→</div>
+        </a>
+    </div>
+  </section>
+</main>
+
+<a href="#" id="scroll-top" aria-label="Scroll to top">↑</a>
+
+<script>
+
+// Search
+const INDEX = [{"id": "newtonian_mechanics", "title": "Newtonian Mechanics", "tags": ["foundation", "newton", "classical"]}, {"id": "kinematics", "title": "Kinematics", "tags": ["motion", "velocity", "acceleration"]}, {"id": "dynamics", "title": "Dynamics", "tags": ["forces", "newton", "differential equations"]}, {"id": "energy_work", "title": "Energy & Work", "tags": ["energy", "conservation", "work"]}, {"id": "momentum", "title": "Momentum", "tags": ["momentum", "conservation", "collisions"]}, {"id": "lagrangian", "title": "Lagrangian Mechanics", "tags": ["lagrangian", "analytical mechanics", "advanced"]}, {"id": "reference_frames", "title": "Reference Frames", "tags": ["frames", "relativity", "rotating"]}];
+let pyodideReady = null;
+
+function escapePyForExec(src) {
+  const normalized = src.replaceAll(String.fromCharCode(13), '');
+  const indented = normalized.split('\n').map(line => `        ${line}`).join('\n');
+  return `import io, contextlib, traceback
+__wiki_buf = io.StringIO()
+with contextlib.redirect_stdout(__wiki_buf), contextlib.redirect_stderr(__wiki_buf):
+    try:
+${indented}
+    except Exception:
+        traceback.print_exc()
+__wiki_out = __wiki_buf.getvalue()
+`;
+}
+
+async function ensurePyodide() {
+  if (pyodideReady) return pyodideReady;
+  pyodideReady = (async () => {
+    if (!window.loadPyodide) {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js';
+        s.onload = resolve;
+        s.onerror = () => reject(new Error('Failed to load pyodide.js'));
+        document.head.appendChild(s);
+      });
+    }
+    const py = await window.loadPyodide();
+    return py;
+  })();
+  return pyodideReady;
+}
+
+const input = document.getElementById('search-input');
+const results = document.getElementById('search-results');
+
+if (input) {
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.classList.remove('visible'); return; }
+    const hits = INDEX.filter(n =>
+      n.title.toLowerCase().includes(q) ||
+      (n.tags || []).some(t => t.includes(q))
+    ).slice(0, 6);
+    if (!hits.length) { results.classList.remove('visible'); return; }
+    results.innerHTML = hits.map(n =>
+      `<a class="sr-item" href="${n.id}.html">
+        <div class="sr-item-title">${n.title}</div>
+        <div class="sr-item-tags">${(n.tags||[]).join(' · ')}</div>
+      </a>`
+    ).join('');
+    results.classList.add('visible');
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) results.classList.remove('visible');
+  });
+}
+
+// Scroll-to-top
+const scrollBtn = document.getElementById('scroll-top');
+if (scrollBtn) {
+  window.addEventListener('scroll', () => {
+    scrollBtn.classList.toggle('visible', window.scrollY > 300);
+  });
+}
+
+// Back: history is unreliable for file:// and some redirects; prefer real back then home
+const backBtn = document.getElementById('back-btn');
+if (backBtn) {
+  backBtn.type = 'button';
+  backBtn.addEventListener('click', () => {
+    const ref = document.referrer;
+    let sameOrigin = false;
+    try {
+      if (ref) sameOrigin = new URL(ref).origin === window.location.origin;
+    } catch (e) {}
+    if (ref && sameOrigin && ref !== window.location.href) {
+      window.history.back();
+    } else {
+      window.location.href = 'index.html';
+    }
+  });
+}
+
+// Pyodide runner
+document.querySelectorAll('.run-py-btn').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    const host = btn.closest('.code-runner');
+    const out = host ? host.querySelector('.py-output') : null;
+    if (!out) return;
+    const code = atob(btn.dataset.codeB64 || '');
+    btn.disabled = true;
+    out.textContent = 'Running in browser Python...';
+    try {
+      const py = await ensurePyodide();
+      await py.runPythonAsync(escapePyForExec(code));
+      const pyOutObj = py.globals.get('__wiki_out');
+      const pyOut = pyOutObj ? pyOutObj.toString() : '';
+      if (pyOutObj && typeof pyOutObj.destroy === 'function') pyOutObj.destroy();
+      out.textContent = pyOut || '(no output)';
+    } catch (err) {
+      out.textContent = `Error: ${err && err.message ? err.message : String(err)}`;
+    } finally {
+      btn.disabled = false;
+    }
+  });
+});
+
+</script>
+</body>
+</html>

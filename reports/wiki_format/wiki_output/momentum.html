@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Momentum — Classical Mechanics</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- KaTeX for math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'\\[',right:'\\]',display:true},
+      {left:'\\(',right:'\\)',display:false},
+      {left:'$',right:'$',display:false}
+    ]});"></script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-title">Classical Mechanics</a>
+  <button type="button" id="back-btn" class="nav-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg> Back</button>
+  <div class="nav-breadcrumb">
+    <a href="index.html" class="crumb">Newtonian Mechanics</a><span class="sep">/</span><span class="current">Momentum</span>
+  </div>
+  <div class="search-wrap">
+    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search-input" placeholder="Search nodes…" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</nav>
+
+<main>
+  <header class="page-header">
+    <h1>Momentum</h1>
+    <div class="page-tags"><span class="tag">momentum</span><span class="tag">conservation</span><span class="tag">collisions</span></div>
+  </header>
+
+  <article class="content">
+    <h2 id="momentum">Momentum</h2>
+
+<p>Momentum is a <strong>conserved vector quantity</strong> that captures the ``quantity of motion'' of a system.</p>
+
+<h2 id="linear-momentum">Linear Momentum</h2>
+
+<p>\[ \vec{p} = m\vec{v} \]</p>
+
+<p>Newton's second law in its most general form:</p>
+
+<p>\[ \vec{F}_{\mathrm{net}} = \frac{d\vec{p}}{dt} \]</p>
+
+<h2 id="conservation-of-linear-momentum">Conservation of Linear Momentum</h2>
+
+<p>When the net external force on a system is zero:</p>
+
+<p>\[ \vec{p}_{\mathrm{total}} = \text{constant} \]</p>
+
+<p>This governs <strong>collisions</strong> and <strong>explosions</strong>.</p>
+
+<h3 id="elastic-vs-inelastic-collisions">Elastic vs Inelastic Collisions</h3>
+
+<ul>
+  <li><strong>Elastic:</strong> Both momentum and kinetic energy conserved</li>
+  <li><strong>Inelastic:</strong> Only momentum conserved; kinetic energy lost to heat/deformation</li>
+  <li><strong>Perfectly inelastic:</strong> Objects stick together</li>
+</ul>
+
+<h2 id="impulse">Impulse</h2>
+
+<p>The impulse-momentum theorem:</p>
+
+<p>\[ \vec{J} = \int \vec{F}\, dt = \Delta\vec{p} \]</p>
+
+<h2 id="angular-momentum">Angular Momentum</h2>
+
+<p>\[ \vec{L} = \vec{r} \times \vec{p} = I\vec{\omega} \]</p>
+
+<p>Conserved when net <strong>torque</strong> is zero --- this is why a spinning ice skater speeds up when pulling their arms in.</p>
+
+<h2 id="related-topics">Related Topics</h2>
+
+<ul>
+  <li><a href="newtonian_mechanics.html" class="wiki-link">Newtonian Mechanics</a> --- Home</li>
+  <li><a href="energy_work.html" class="wiki-link">Energy &amp; Work</a> --- The other great conservation law</li>
+  <li><a href="dynamics.html" class="wiki-link">Dynamics</a> --- Forces and their effects</li>
+</ul>
+  </article>
+
+  
+  <section class="related-section">
+    <h3>Connected Nodes</h3>
+    <div class="related-grid">
+        <a href="energy_work.html" class="related-card">
+          <div class="rc-title">Energy & Work</div>
+          <div class="rc-arrow">→</div>
+        </a>
+        <a href="newtonian_mechanics.html" class="related-card">
+          <div class="rc-title">Newtonian Mechanics</div>
+          <div class="rc-arrow">→</div>
+        </a>
+    </div>
+  </section>
+</main>
+
+<a href="#" id="scroll-top" aria-label="Scroll to top">↑</a>
+
+<script>
+
+// Search
+const INDEX = [{"id": "newtonian_mechanics", "title": "Newtonian Mechanics", "tags": ["foundation", "newton", "classical"]}, {"id": "kinematics", "title": "Kinematics", "tags": ["motion", "velocity", "acceleration"]}, {"id": "dynamics", "title": "Dynamics", "tags": ["forces", "newton", "differential equations"]}, {"id": "energy_work", "title": "Energy & Work", "tags": ["energy", "conservation", "work"]}, {"id": "momentum", "title": "Momentum", "tags": ["momentum", "conservation", "collisions"]}, {"id": "lagrangian", "title": "Lagrangian Mechanics", "tags": ["lagrangian", "analytical mechanics", "advanced"]}, {"id": "reference_frames", "title": "Reference Frames", "tags": ["frames", "relativity", "rotating"]}];
+let pyodideReady = null;
+
+function escapePyForExec(src) {
+  const normalized = src.replaceAll(String.fromCharCode(13), '');
+  const indented = normalized.split('\n').map(line => `        ${line}`).join('\n');
+  return `import io, contextlib, traceback
+__wiki_buf = io.StringIO()
+with contextlib.redirect_stdout(__wiki_buf), contextlib.redirect_stderr(__wiki_buf):
+    try:
+${indented}
+    except Exception:
+        traceback.print_exc()
+__wiki_out = __wiki_buf.getvalue()
+`;
+}
+
+async function ensurePyodide() {
+  if (pyodideReady) return pyodideReady;
+  pyodideReady = (async () => {
+    if (!window.loadPyodide) {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js';
+        s.onload = resolve;
+        s.onerror = () => reject(new Error('Failed to load pyodide.js'));
+        document.head.appendChild(s);
+      });
+    }
+    const py = await window.loadPyodide();
+    return py;
+  })();
+  return pyodideReady;
+}
+
+const input = document.getElementById('search-input');
+const results = document.getElementById('search-results');
+
+if (input) {
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.classList.remove('visible'); return; }
+    const hits = INDEX.filter(n =>
+      n.title.toLowerCase().includes(q) ||
+      (n.tags || []).some(t => t.includes(q))
+    ).slice(0, 6);
+    if (!hits.length) { results.classList.remove('visible'); return; }
+    results.innerHTML = hits.map(n =>
+      `<a class="sr-item" href="${n.id}.html">
+        <div class="sr-item-title">${n.title}</div>
+        <div class="sr-item-tags">${(n.tags||[]).join(' · ')}</div>
+      </a>`
+    ).join('');
+    results.classList.add('visible');
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) results.classList.remove('visible');
+  });
+}
+
+// Scroll-to-top
+const scrollBtn = document.getElementById('scroll-top');
+if (scrollBtn) {
+  window.addEventListener('scroll', () => {
+    scrollBtn.classList.toggle('visible', window.scrollY > 300);
+  });
+}
+
+// Back: history is unreliable for file:// and some redirects; prefer real back then home
+const backBtn = document.getElementById('back-btn');
+if (backBtn) {
+  backBtn.type = 'button';
+  backBtn.addEventListener('click', () => {
+    const ref = document.referrer;
+    let sameOrigin = false;
+    try {
+      if (ref) sameOrigin = new URL(ref).origin === window.location.origin;
+    } catch (e) {}
+    if (ref && sameOrigin && ref !== window.location.href) {
+      window.history.back();
+    } else {
+      window.location.href = 'index.html';
+    }
+  });
+}
+
+// Pyodide runner
+document.querySelectorAll('.run-py-btn').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    const host = btn.closest('.code-runner');
+    const out = host ? host.querySelector('.py-output') : null;
+    if (!out) return;
+    const code = atob(btn.dataset.codeB64 || '');
+    btn.disabled = true;
+    out.textContent = 'Running in browser Python...';
+    try {
+      const py = await ensurePyodide();
+      await py.runPythonAsync(escapePyForExec(code));
+      const pyOutObj = py.globals.get('__wiki_out');
+      const pyOut = pyOutObj ? pyOutObj.toString() : '';
+      if (pyOutObj && typeof pyOutObj.destroy === 'function') pyOutObj.destroy();
+      out.textContent = pyOut || '(no output)';
+    } catch (err) {
+      out.textContent = `Error: ${err && err.message ? err.message : String(err)}`;
+    } finally {
+      btn.disabled = false;
+    }
+  });
+});
+
+</script>
+</body>
+</html>
