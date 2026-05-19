@@ -1,0 +1,3 @@
+Gate benchmark: CNOT on 10 qubits (no measurement except MZ).
+#
+c 5 6

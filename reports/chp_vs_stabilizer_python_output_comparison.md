@@ -5,10 +5,12 @@ This report compares **Aaronson–Gottesman stabilizer tableaux** between the re
 **How to regenerate performance assets and summaries**
 
 ```powershell
-python .\reports\chp_vs_stabilizer_benchmark.py --n 200 --warmup 10
+python .\reports\chp_vs_stabilizer_benchmark.py --n 1000 --warmup 30
 ```
 
-Outputs (figures + JSON + short markdown summary) are written under `reports/chp_vs_stabilizer_assets/`.
+Outputs (figures + JSON + short markdown summary) are written under `reports/chp_vs_stabilizer_assets/`. Use `--skip-gates` or `--skip-circuits` to run only one half of the suite.
+
+Gate benchmark circuits (auto-generated) live in `reports/chp_vs_stabilizer_assets/circuits_gates/`.
 
 **CHP build (reference)**
 
@@ -190,11 +192,49 @@ The figure below compares **outcome distributions** across multiple runs for eac
 
 ---
 
-## 5. Performance metrics (multiple runs)
+## 5. Pure gate operations and mixed-circuit timing (1000 runs)
+
+### Methodology
+
+- **Runs:** **1000** independent executions per gate and per implementation (30 warmup runs each).
+- **Qubits:** **10** (`|0…0⟩` initial state). Single-qubit gates act on **qubit 5**; **CNOT** uses control **5** → target **6**.
+- **Python:** one native gate on a fresh `StabilizerState` (or `Circuit.run` for the mixed Clifford sequence). Timed **in-process**; no printing.
+- **CHP:** one `.chp` file per case under `circuits_gates/`, invoked as **`chp.exe -s <file>`** (silent measurements). Timed as **subprocess wall time** (parse + simulate + exit).
+- **Gate set:** stabilizer-python implements **H, S, X, Z, CNOT, MZ**. CHP natively supports **H, P (S), CNOT, M** only ([CHP file format](learning_material/CHP/03_File_Format_and_Usage.md)). For a fair logical comparison:
+  - **X** on CHP: `H P P H` (since \(X = H Z H\), \(Z = P^2\))
+  - **Z** on CHP: `P P`
+  - **Mixed circuit** (no measurement): `H(0), S(1), X(2), Z(3), CNOT(4,5), H(6), S(7), CNOT(8,9)` in Python; CHP uses the same sequence with X/Z decomposed as above (12 CHP instructions).
+
+### Side-by-side timing (p50 / p95 / mean, ms)
+
+| Gate / circuit | CHP mapping | Python p50 | Python p95 | Python mean | CHP p50 | CHP p95 | CHP mean | Python/CHP p50 |
+|----------------|-------------|------------|------------|-------------|---------|---------|----------|----------------|
+| **H** | native `h` | 0.070 | 0.100 | 0.073 | 13.408 | 16.065 | 13.388 | 0.0052× |
+| **S** | native `p` | 0.063 | 0.084 | 0.066 | 12.196 | 14.029 | 12.130 | 0.0051× |
+| **X** | `H P² H` | 0.061 | 0.080 | 0.065 | 12.304 | 14.116 | 12.194 | 0.0050× |
+| **Z** | `P²` | 0.062 | 0.090 | 0.065 | 12.154 | 14.481 | 12.196 | 0.0051× |
+| **CNOT** | native `c` | 0.076 | 0.106 | 0.081 | 14.586 | 16.536 | 14.572 | 0.0052× |
+| **MZ** | native `m` | 0.073 | 0.102 | 0.075 | 13.434 | 15.058 | 13.219 | 0.0054× |
+| **Mixed (no meas)** | 12 CHP ops | 0.112 | 0.156 | 0.117 | 12.257 | 14.322 | 12.209 | 0.0092× |
+
+**Figure (p50 per gate / mixed circuit):**
+
+![](chp_vs_stabilizer_assets/performance_gate_runtime.png)
+
+**Interpretation**
+
+- **Per-gate Python cost** is flat at ~**0.06–0.08 ms** (one tableau update on 10 qubits), whether the gate is H, S, X, Z, CNOT, or MZ.
+- **Per-gate CHP cost** is also nearly flat at ~**12–15 ms** because each run pays **process startup and file parse**; the native vs decomposed X/Z difference is small compared to that overhead.
+- **Mixed circuit:** Python ~**0.11 ms** for 8 logical gates in one `Circuit.run`; CHP ~**12 ms** for 12 primitive instructions in one subprocess — still dominated by harness overhead, not gate count.
+- Ratios **Python/CHP p50 ≈ 0.005×** mean Python is ~**150–200× faster** in this harness for single-gate and mixed-circuit cases; that is **not** a claim about asymptotic simulator speed, only this repo’s measurement setup.
+
+---
+
+## 6. Full-circuit performance metrics (1000 runs)
 
 ### Runtime distributions
 
-Per-run **wall time** for each circuit and implementation:
+Per-run **wall time** for each benchmark circuit (EPR, GHZ, Teleport) and implementation:
 
 ![](chp_vs_stabilizer_assets/performance_runtime_boxplot.png)
 
@@ -210,22 +250,23 @@ Measured with `tracemalloc` peak allocated bytes during each run:
 
 | Artifact | Path |
 |----------|------|
-| Full JSON | `reports/chp_vs_stabilizer_assets/metrics.json` |
+| Full JSON (`circuits` + `gates`) | `reports/chp_vs_stabilizer_assets/metrics.json` |
 | Short markdown summary | `reports/chp_vs_stabilizer_assets/metrics_summary.md` |
+| Gate bar chart | `reports/chp_vs_stabilizer_assets/performance_gate_runtime.png` |
 
-Snapshot from the current `metrics.json` in the repo (timing: **200** runs per side; CHP outcome frequencies from **50** runs):
+Snapshot from the current `metrics.json` (timing: **1000** runs per side; CHP outcome frequencies from **250** runs):
 
-| Circuit | Python p50 (ms) | CHP p50 (ms) | Ratio Python/CHP p50 |
-|---------|-----------------|--------------|----------------------|
-| EPR | 0.175 | 31.305 | ~0.01× |
-| GHZ | 0.419 | 42.388 | ~0.01× |
-| Teleport (z) | 0.417 | 35.937 | ~0.01× |
+| Circuit | Python p50 (ms) | CHP p50 (ms) | Python/CHP p50 |
+|---------|-----------------|--------------|----------------|
+| EPR | 0.078 | 12.415 | 0.0063× |
+| GHZ | 0.148 | 14.498 | 0.0102× |
+| Teleport (z) | 0.134 | 12.086 | 0.0111× |
 
 Re-run the benchmark to refresh numbers; the JSON is the source of truth.
 
 ---
 
-## 6. Benchmark circuits: measurement outcomes (original side-by-side)
+## 7. Benchmark circuits: measurement outcomes (original side-by-side)
 
 The following sections keep the **original** outcome-oriented comparison (single Python sample vs two CHP samples) for the three benchmark circuits. They complement the **deterministic** tableau snapshots above (which stop before measurement).
 
@@ -367,9 +408,10 @@ Outcome of measuring qubit 2: 0
 
 ---
 
-## 7. Takeaways
+## 8. Takeaways
 
 - **Tableau / bit matrices:** For **EPR Bell prep** and **GHZ prep** (prefix circuits in `circuits_tableau/`), CHP’s **first** `printstate` block and stabilizer-python’s `format_chp_printstate()` agree on every **Pauli letter** per row; Python additionally prints the **`X` and `Z` binary matrices** for inspection.
 - **CHP’s second tableau print** may differ after `gaussian()` while representing the **same** stabilizer state; Python does not duplicate that second canonicalization step in its formatter.
-- **Performance:** See section 5 and `metrics.json` / `metrics_summary.md`; CHP subprocess timing is dominated by **process overhead** in this harness.
+- **Pure gates (section 5):** All stabilizer-python gates were timed at ~**0.06–0.08 ms** p50 on 10 qubits (1000 runs). CHP is ~**12–15 ms** p50 per run regardless of gate type because of **subprocess overhead**; X/Z use **H P² H** and **P²** decompositions on CHP.
+- **Full circuits (section 6):** With **1000** runs, Python stays sub-millisecond p50; CHP stays ~**12–15 ms** p50 for EPR/GHZ/Teleport example files.
 - **Teleportation** remains the main area where **measurement-outcome statistics** and single-run samples should be checked against CHP using fresh benchmark output, not only tableau snapshots.

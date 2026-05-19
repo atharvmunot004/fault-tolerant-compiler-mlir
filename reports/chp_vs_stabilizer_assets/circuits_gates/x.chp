@@ -1,0 +1,6 @@
+Gate benchmark: X on 10 qubits (no measurement except MZ).
+#
+h 5
+p 5
+p 5
+h 5
