@@ -149,7 +149,11 @@ def plot_runtime_boxplots(
         data.append(b)
         labels.append(f"{name}\nCHP")
 
-    ax.boxplot(data, labels=labels, showfliers=False)
+    try:
+        ax.boxplot(data, tick_labels=labels, showfliers=False)
+    except TypeError:
+        # Matplotlib < 3.9
+        ax.boxplot(data, labels=labels, showfliers=False)
     ax.set_title(title)
     ax.set_ylabel("wall time (ms)")
     ax.grid(axis="y", alpha=0.25)

@@ -1,0 +1,10 @@
+GHZ prep through second H(0), matching ghz.chp before any measurement.
+#
+h 0
+h 1
+c 0 2
+c 1 2
+p 0
+p 1
+p 2
+h 0

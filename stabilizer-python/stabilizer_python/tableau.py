@@ -217,6 +217,61 @@ class StabilizerState:
         return m
 
     # --- Debug / inspection helpers ---
+    def _pauli_char_at(self, r: int, q: int) -> str:
+        xb, zb = self.x_mat[r][q], self.z_mat[r][q]
+        if xb == 0 and zb == 0:
+            return "I"
+        if xb == 1 and zb == 0:
+            return "X"
+        if xb == 1 and zb == 1:
+            return "Y"
+        return "Z"
+
+    def format_chp_printstate(self) -> str:
+        """
+        Same layout as CHP's printstate(): destabilizer rows, a rule line, stabilizer rows,
+        each row prefixed with + or - from the sign bit (CHP phase mod 4 reduced to +/- here).
+        """
+        n = self.n
+        lines: List[str] = []
+        for i in range(2 * n):
+            if i == n:
+                lines.append("")
+                lines.append("-" * (n + 1))
+            sign = "-" if self.r_phase[i] else "+"
+            pauli = "".join(self._pauli_char_at(i, q) for q in range(n))
+            lines.append(sign + pauli)
+        return "\n".join(lines)
+
+    def format_xz_binary_matrices(self) -> str:
+        """Print the raw X and Z bit tables (2n rows × n columns), side by side."""
+
+        def _fmt_row(row: List[int]) -> str:
+            return "  " + " ".join(str(b) for b in row)
+
+        n_rows = 2 * self.n
+        x_title = f"X matrix ({n_rows} x {self.n})"
+        z_title = f"Z matrix ({n_rows} x {self.n})"
+        gap = "    "
+        x_rows = [_fmt_row(row) for row in self.x_mat]
+        z_rows = [_fmt_row(row) for row in self.z_mat]
+        left_width = max([len(x_title)] + [len(r) for r in x_rows])
+
+        lines = [x_title.ljust(left_width) + gap + z_title]
+        lines.extend(
+            x_rows[i].ljust(left_width) + gap + z_rows[i] for i in range(n_rows)
+        )
+        return "\n".join(lines)
+
+    def format_tableau_debug(self) -> str:
+        """CHP-style Pauli rows plus explicit X and Z binary matrices."""
+        return (
+            "Tableau (CHP-style destabilizers | stabilizers):\n"
+            + self.format_chp_printstate()
+            + "\n\n"
+            + self.format_xz_binary_matrices()
+        )
+
     def stabilizer_generators(self) -> List[Tuple[int, List[int], List[int]]]:
         """
         Returns list of stabilizer generators as (phase_bit, x_row, z_row) for the last n rows.

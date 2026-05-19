@@ -37,6 +37,25 @@ class BitFlip3Code:
         return c
 
     @staticmethod
+    def read_syndrome(state: StabilizerState) -> Tuple[int, int]:
+        """
+        Read (Z0Z1, Z1Z2) eigenvalue bits from stabilizer phases on the 3 data qubits.
+        No ancillas required. Returns (s01, s12) where 0 => +1 and 1 => -1.
+        """
+        if state.n < 3:
+            raise ValueError("need at least 3 qubits")
+
+        def _phase_for_z(zpat: Tuple[int, ...]) -> int:
+            for p, x, z in state.stabilizer_generators():
+                if all(xb == 0 for xb in x) and tuple(z[:3]) == zpat:
+                    return p
+            raise ValueError(f"no stabilizer with Z pattern {zpat}")
+
+        s01 = _phase_for_z((1, 1, 0))
+        s12 = _phase_for_z((1, 1, 0)) ^ _phase_for_z((1, 0, 1))
+        return s01, s12
+
+    @staticmethod
     def measure_syndrome(state: StabilizerState, *, ancilla_01: int = 3, ancilla_12: int = 4) -> Tuple[int, int]:
         """
         Measures (Z0Z1, Z1Z2) into two ancillas and resets those ancillas back to |0>.
@@ -96,6 +115,32 @@ class Shor9Code:
         c.cnot(3, 4).cnot(3, 5)
         c.cnot(6, 7).cnot(6, 8)
         return c
+
+    # Syndrome bit patterns (stabilizer row phases) for single X errors on q0..q8.
+    _X_SYNDROME: Tuple[Tuple[int, ...], ...] = (
+        (0, 1, 1, 0, 0, 0, 0, 0, 0),
+        (0, 1, 0, 0, 0, 0, 0, 0, 0),
+        (0, 0, 1, 0, 0, 0, 0, 0, 0),
+        (0, 0, 0, 0, 1, 1, 0, 0, 0),
+        (0, 0, 0, 0, 1, 0, 0, 0, 0),
+        (0, 0, 0, 0, 0, 1, 0, 0, 0),
+        (0, 0, 0, 0, 0, 0, 0, 1, 1),
+        (0, 0, 0, 0, 0, 0, 0, 1, 0),
+        (0, 0, 0, 0, 0, 0, 0, 0, 1),
+    )
+
+    @staticmethod
+    def read_syndrome(state: StabilizerState) -> Tuple[int, ...]:
+        """Stabilizer-row phase bits (0 => +1, 1 => -1) for all 9 generators."""
+        return tuple(g[0] for g in state.stabilizer_generators())
+
+    @staticmethod
+    def correct_x_from_syndrome(state: StabilizerState, syndrome: Tuple[int, ...]) -> None:
+        """Apply X on the data qubit matching a single-X-error syndrome, if recognized."""
+        for q, pattern in enumerate(Shor9Code._X_SYNDROME):
+            if syndrome == pattern:
+                state.x(q)
+                return
 
 
 def run_2qubit_bell() -> Tuple[StabilizerState, List[int]]:

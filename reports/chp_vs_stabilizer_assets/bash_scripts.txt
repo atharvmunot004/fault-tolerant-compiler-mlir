@@ -1,0 +1,27 @@
+CHP vs stabilizer metrics (metrics.json)
+========================================
+
+The JSON in metrics.json is produced by reports/chp_vs_stabilizer_benchmark.py:
+- Per circuit: EPR, GHZ, Teleport (z) — same names as top-level keys in metrics.json.
+- python.timing_ms / chp.timing_ms: n runs (default --n 200).
+- python.peak_alloc_kib: tracemalloc peak KiB per Python run.
+- python.outcome_freq / chp.outcome_freq: string keys are concatenated measured bits;
+  CHP outcomes use max(50, n//4) runs (50 when n=200), matching metrics_summary.md.
+
+One-shot bash (repo root = parent of reports/):
+
+  bash reports/chp_vs_stabilizer_assets/run_chp_vs_stabilizer_metrics.sh
+
+Equivalent manual steps:
+
+  cd learning_material/CHP && gcc -o chp.exe chp.c && cd ../..
+  python reports/chp_vs_stabilizer_benchmark.py --n 200 --warmup 10
+
+Optional: before benchmarking, from stabilizer-python/
+
+  python -m pytest -q
+
+Windows PowerShell (same benchmark; paths differ):
+
+  cd learning_material\CHP; gcc -o chp.exe chp.c; cd ..\..
+  python .\reports\chp_vs_stabilizer_benchmark.py --n 200 --warmup 10

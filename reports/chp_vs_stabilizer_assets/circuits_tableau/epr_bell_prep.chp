@@ -1,0 +1,4 @@
+EPR Bell prep: H on q0, CNOT 0->1 (no measurement).
+#
+h 0
+c 0 1
