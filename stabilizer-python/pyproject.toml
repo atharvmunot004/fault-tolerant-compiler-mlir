@@ -16,7 +16,11 @@ classifiers = [
 [project.optional-dependencies]
 dev = [
     "pytest",
+    "qiskit",
 ]
+
+[tool.pytest.ini_options]
+addopts = "-s"
 
 [tool.setuptools.packages.find]
 include = ["stabilizer_python*"]
