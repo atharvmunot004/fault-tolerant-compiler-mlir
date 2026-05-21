@@ -11,7 +11,20 @@ Minimal stabilizer (Clifford) simulator in pure Python, plus example error-corre
 
 ### Quick start
 
-From repo root:
+Install directly from GitHub:
+
+```bash
+python -m pip install "git+https://github.com/atharvmunot004/fault-tolerant-compiler-mlir.git#subdirectory=stabilizer-python"
+```
+
+For local development, install the package in editable mode:
+
+```bash
+cd stabilizer-python
+python -m pip install -e ".[dev]"
+```
+
+Then run examples:
 
 ```bash
 python -m stabilizer_python.examples.two_qubit_bell
@@ -22,6 +35,6 @@ python -m stabilizer_python.examples.shor9_demo
 Run tests:
 
 ```bash
-pytest -q stabilizer-python/tests
+pytest -q
 ```
 
