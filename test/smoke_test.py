@@ -1,3 +1,5 @@
+# test\.venv\Scripts\python test\smoke_test.py
+
 import stabilizer_python
 from stabilizer_python import Circuit, StabilizerState
 
