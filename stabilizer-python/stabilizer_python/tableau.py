@@ -109,6 +109,11 @@ class StabilizerState:
         self.r_phase[a] = 1 if exp_i == 2 else 0
 
     # --- Clifford gates ---
+    def i(self, q: int) -> None:
+        """Identity gate; included for completeness with Clifford gate sets."""
+        if q < 0 or q >= self.n:
+            raise IndexError("qubit index out of range")
+
     def h(self, q: int) -> None:
         for r in range(2 * self.n):
             x = self.x_mat[r][q]
@@ -125,10 +130,49 @@ class StabilizerState:
                 self.r_phase[r] ^= 1  # Y -> -X under S
             self.z_mat[r][q] ^= x
 
+    def sdg(self, q: int) -> None:
+        for r in range(2 * self.n):
+            x = self.x_mat[r][q]
+            z = self.z_mat[r][q]
+            if x & (z ^ 1):
+                self.r_phase[r] ^= 1  # X -> -Y under S†
+            self.z_mat[r][q] ^= x
+
+    def s_dagger(self, q: int) -> None:
+        self.sdg(q)
+
+    def sx(self, q: int) -> None:
+        for r in range(2 * self.n):
+            x = self.x_mat[r][q]
+            z = self.z_mat[r][q]
+            if (x ^ 1) & z:
+                self.r_phase[r] ^= 1  # Z -> -Y under √X
+            self.x_mat[r][q] ^= z
+
+    def sqrt_x(self, q: int) -> None:
+        self.sx(q)
+
+    def sxdg(self, q: int) -> None:
+        for r in range(2 * self.n):
+            x = self.x_mat[r][q]
+            z = self.z_mat[r][q]
+            if x & z:
+                self.r_phase[r] ^= 1  # Y -> -Z under √X†
+            self.x_mat[r][q] ^= z
+
+    def sqrt_x_dagger(self, q: int) -> None:
+        self.sxdg(q)
+
     def x(self, q: int) -> None:
         # Conjugation by X flips sign of Z and Y.
         for r in range(2 * self.n):
             if self.z_mat[r][q] == 1:
+                self.r_phase[r] ^= 1
+
+    def y(self, q: int) -> None:
+        # Conjugation by Y flips sign of X and Z, but not Y.
+        for r in range(2 * self.n):
+            if self.x_mat[r][q] ^ self.z_mat[r][q]:
                 self.r_phase[r] ^= 1
 
     def z(self, q: int) -> None:
@@ -136,6 +180,9 @@ class StabilizerState:
         for r in range(2 * self.n):
             if self.x_mat[r][q] == 1:
                 self.r_phase[r] ^= 1
+
+    def cx(self, control: int, target: int) -> None:
+        self.cnot(control, target)
 
     def cnot(self, control: int, target: int) -> None:
         c, t = control, target
@@ -151,6 +198,21 @@ class StabilizerState:
 
             self.x_mat[r][t] ^= xc
             self.z_mat[r][c] ^= zt
+
+    def cz(self, control: int, target: int) -> None:
+        self.h(target)
+        self.cnot(control, target)
+        self.h(target)
+
+    def cy(self, control: int, target: int) -> None:
+        self.sdg(target)
+        self.cnot(control, target)
+        self.s(target)
+
+    def swap(self, q1: int, q2: int) -> None:
+        self.cnot(q1, q2)
+        self.cnot(q2, q1)
+        self.cnot(q1, q2)
 
     # --- Measurement ---
     def measure_z(self, q: int) -> int:
@@ -263,13 +325,21 @@ class StabilizerState:
         )
         return "\n".join(lines)
 
+    def format_phase_matrix(self) -> str:
+        """Print the tableau phase bits as a 2n × 1 column matrix."""
+        lines = [f"Phase matrix ({2 * self.n} x 1)"]
+        lines.extend(f"  [{phase}]" for phase in self.r_phase)
+        return "\n".join(lines)
+
     def format_tableau_debug(self) -> str:
-        """CHP-style Pauli rows plus explicit X and Z binary matrices."""
+        """CHP-style Pauli rows plus explicit X, Z, and phase matrices."""
         return (
             "Tableau (CHP-style destabilizers | stabilizers):\n"
             + self.format_chp_printstate()
             + "\n\n"
             + self.format_xz_binary_matrices()
+            + "\n\n"
+            + self.format_phase_matrix()
         )
 
     def stabilizer_generators(self) -> List[Tuple[int, List[int], List[int]]]:
